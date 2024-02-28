@@ -72,10 +72,11 @@ const router = useRouter();
 const id = ref();
 
 const checkbox = ref<{ label: string; value: string }[]>([]);
-const text = ref<string>('');
+const checkboxs = ref<[]>([]);
+const text = ref<string[]>([]);
 const dropdown = ref<{ name: string; code: string }[]>([]);
-const inputNumber = ref<number>(0);
-const inputText = ref<string>('');
+const inputNumber = ref<number[]>();
+const inputText = ref<string[]>([]);
 
 const questions = ref<QuestionModel[]>([]);
 
@@ -88,7 +89,14 @@ onMounted(async () => {
   }
 
   questions.value = await apiService.getQuestionsByFormulaire(id.value);
+
+  questions.value.forEach((question) => {
+    if (question.type_question?.type === 'checkbox') {
+      checkboxs.value.push(JSON.parse(question.options_question) as { label: string; value: string }[]);
+    }
+  });
   console.log(questions.value);
+  console.log(checkboxs.value);
 });
 
 const goBack = () => {

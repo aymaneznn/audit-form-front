@@ -609,6 +609,16 @@ const showError = (title: string, detail: string) => {
   toast.add({ severity: 'error', summary: title, detail: detail, life: 3000 });
 };
 
+enum QuestionType {
+  Checkbox = 1,
+  Text = 2,
+  Dropdown = 3,
+  InputNumber = 4,
+  InputText = 5,
+  MultiSelect = 6,
+  SansType = 0,
+}
+
 async function publieForm() {
   if (formName.value === '' || formDescription.value === '' || questions.value.length === 0) {
     showError('', 'Impossible de créer le formulaire');
@@ -638,19 +648,26 @@ async function publieForm() {
     const formulaires: FormulaireModel[] = await apiService.getAllFormulaires();
     questions.value.forEach((element) => {
       formulaire.id = formulaires[formulaires.length - 1]?.id ?? 0;
-      let indexType = 0;
-      if (element.type === 'checkbox') {
-        indexType = 2;
-      } else if (element.type === 'dropdown') {
-        indexType = 3;
-      } else if (element.type === 'inputNumber') {
-        indexType = 4;
-      } else if (element.type === 'inputText') {
-        indexType = 5;
-      } else if (element.type === 'multiSelect') {
-        indexType = 6;
-      } else if (element.type === 'text') {
-        indexType = 2;
+      let indexType: QuestionType = QuestionType.SansType;
+      switch (element.type) {
+        case 'checkbox':
+          indexType = 1;
+          break;
+        case 'text':
+          indexType = 2;
+          break;
+        case 'dropdown':
+          indexType = 3;
+          break;
+        case 'inputNumber':
+          indexType = 4;
+          break;
+        case 'inputText':
+          indexType = 5;
+          break;
+        case 'multiSelect':
+          indexType = 6;
+          break;
       }
       JSON.stringify(element.options);
       const question: QuestionModel = {
@@ -665,6 +682,7 @@ async function publieForm() {
       };
       listeQuestion.value.push(question);
       apiService.createQuestion(question);
+      setTimeout(() => {}, 100);
     });
     showSuccess('', 'Formulaire créé');
     formName.value = 'Formulaire sans titre';
