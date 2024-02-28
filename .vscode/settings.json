@@ -1,0 +1,4 @@
+{
+  "testing.automaticallyOpenPeekView": "never",
+  "vitest.commandLine": "npx vitest"
+}
