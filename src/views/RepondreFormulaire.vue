@@ -97,7 +97,6 @@ const goBack = () => {
 
 const submitResponse = () => {
   // Logique pour soumettre les réponses
-  console.log('Réponses soumises avec succès !');
 };
 </script>
 

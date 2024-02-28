@@ -436,7 +436,6 @@ async function getUrlForm() {
   const form: FormulaireModel[] = await apiService.getAllFormulaires();
   url.value = url.value.split('/').slice(0, -1).join('/');
   url.value = url.value + '/reponse/' + form[form.length - 1]?.id;
-  console.log(url.value);
 }
 
 function reset() {
@@ -653,7 +652,6 @@ async function publieForm() {
       } else if (element.type === 'text') {
         indexType = 1;
       }
-      console.log('element.options ', element.options);
       JSON.stringify(element.options);
       const question: QuestionModel = {
         id: undefined,
@@ -665,7 +663,6 @@ async function publieForm() {
         },
         options_question: JSON.stringify(element.options),
       };
-      console.log(element);
       listeQuestion.value.push(question);
       apiService.createQuestion(question);
     });
