@@ -7,7 +7,7 @@
           <PCard class="form-card">
             <template #content>
               <div class="flex justify-content-between h-auto">
-                <div class="" @click="handleFormClick(formulaire)">
+                <div>
                   <h2 class="form-title">{{ formulaire.titre }}</h2>
                   <div class="form-item mb-3">
                     <p class="form-creator" v-if="formulaire.creer_par">Créé par: {{ formulaire.creer_par?.nom ?? 'Unknown' }}</p>
@@ -19,20 +19,7 @@
                   </div>
                 </div>
                 <div class="question-tools">
-                  <PButton
-                    icon="pi pi-pencil"
-                    class="mr-3 mb-3"
-                    text
-                    raised
-                    rounded
-                    aria-label="add"
-                    @click="
-                      showEditDialog = true;
-                      formulaireSelected = formulaire;
-                      formName = formulaire.titre ?? '';
-                      formDescription = formulaire.description ?? '';
-                    "
-                  />
+                  <PButton icon="pi pi-pencil" class="mr-3 mb-3" text raised rounded aria-label="add" @click="editForm(formulaire)" />
                   <ConfirmPopup></ConfirmPopup>
                   <PButton
                     icon="pi pi-trash"
@@ -55,10 +42,29 @@
                     <label for="form-description">Description du formulaire</label>
                     <PTextarea id="form-description" v-model="formDescription" class="form-control"></PTextarea>
                   </div>
-                  <div class="form-actions">
-                    <PButton class="mr-3" @click="updateForm">Enregistrer</PButton>
-                    <PButton @click="showEditDialog = false">Annuler</PButton>
+                </div>
+                <h4 class="dialog-title">Questions:</h4>
+                <div
+                  v-for="question in questions"
+                  :key="question.id"
+                  class="question-item"
+                  @mouseenter="getReponsesByQuestion(question)"
+                  @mouseleave="hideResponses"
+                >
+                  <div class="question-header">
+                    <h3>{{ question.question }}</h3>
+                    <p class="question-type">Type: {{ question.type_question?.type }}</p>
                   </div>
+                  <div class="question-body">
+                    <p v-if="question.formulaire" class="form-info">Formulaire: {{ question.formulaire.titre }}</p>
+                  </div>
+                  <div class="additional-info">
+                    <p v-if="question.formulaire?.creer_par">Créé par: {{ question.formulaire.creer_par?.nom }}</p>
+                  </div>
+                </div>
+                <div class="form-actions">
+                  <PButton class="mr-3" @click="updateForm">Enregistrer</PButton>
+                  <PButton @click="showEditDialog = false">Annuler</PButton>
                 </div>
               </PDialog>
             </template>
@@ -67,33 +73,6 @@
       </div>
     </template>
   </PCard>
-
-  <PDialog v-model="showDialog" :visible="showDialog" :modal="true" class="custom-dialog" style="min-width: 30%">
-    <div class="dialog-content">
-      <h4 class="dialog-title">Questions:</h4>
-      <div
-        v-for="question in questions"
-        :key="question.id"
-        class="question-item"
-        @mouseenter="getReponsesByQuestion(question)"
-        @mouseleave="hideResponses"
-      >
-        <div class="question-header">
-          <h3>{{ question.question }}</h3>
-          <p class="question-type">Type: {{ question.type_question?.type }}</p>
-        </div>
-        <div class="question-body">
-          <p v-if="question.formulaire" class="form-info">Formulaire: {{ question.formulaire.titre }}</p>
-        </div>
-        <div class="additional-info">
-          <p v-if="question.formulaire?.creer_par">Créé par: {{ question.formulaire.creer_par?.nom }}</p>
-        </div>
-      </div>
-      <PButton class="mt-3" @click="showDialog = false" style="border: none; background-color: rgba(255, 1, 1, 0.644); color: white"
-        >Fermer</PButton
-      >
-    </div>
-  </PDialog>
   <Toast />
 </template>
 
@@ -112,7 +91,6 @@ const formulaires = ref<FormulaireModel[]>([]);
 const questions = ref<QuestionModel[]>([]);
 const reponses = ref<ReponseModel[]>([]);
 
-const showDialog = ref(false);
 const showEditDialog = ref(false);
 const reponseShow = ref(false);
 
@@ -124,6 +102,16 @@ const formulaireSelected = ref<FormulaireModel>();
 onMounted(async () => {
   formulaires.value = await apiService.getAllFormulaires();
 });
+
+function editForm(formulaire: FormulaireModel) {
+  showEditDialog.value = true;
+  apiService.getQuestionsByFormulaire(formulaire.id ?? 0).then((resolvedQuestions) => {
+    questions.value = resolvedQuestions;
+  });
+  formulaireSelected.value = formulaire;
+  formName.value = formulaire.titre ?? '';
+  formDescription.value = formulaire.description ?? '';
+}
 
 function updateForm() {
   if (formulaireSelected.value) {
@@ -187,11 +175,6 @@ async function getUrlForm(id: string) {
   url.value = url.value + '/reponse/' + id;
 }
 
-const handleFormClick = async (formulaire: FormulaireModel) => {
-  questions.value = await apiService.getQuestionsByFormulaire(formulaire.id ?? 0);
-  showDialog.value = true;
-};
-
 async function getReponsesByQuestion(question: QuestionModel) {
   reponses.value = await apiService.getReponsesByQuestion(question.id ?? 0);
   reponseShow.value = true;
@@ -237,7 +220,6 @@ const showError = (title: string, detail: string) => {
   border-radius: 8px;
   padding: 20px;
   margin-bottom: 20px;
-  cursor: pointer;
   transition: transform 0.3s ease-in-out;
 
   &:hover {
