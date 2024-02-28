@@ -644,13 +644,13 @@ async function publieForm() {
       } else if (element.type === 'dropdown') {
         indexType = 3;
       } else if (element.type === 'inputNumber') {
-        indexType = 1;
+        indexType = 4;
       } else if (element.type === 'inputText') {
-        indexType = 1;
+        indexType = 5;
       } else if (element.type === 'multiSelect') {
         indexType = 6;
       } else if (element.type === 'text') {
-        indexType = 1;
+        indexType = 2;
       }
       JSON.stringify(element.options);
       const question: QuestionModel = {

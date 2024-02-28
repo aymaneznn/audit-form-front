@@ -88,6 +88,7 @@ onMounted(async () => {
   }
 
   questions.value = await apiService.getQuestionsByFormulaire(id.value);
+  console.log(questions.value);
 });
 
 const goBack = () => {
