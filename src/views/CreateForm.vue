@@ -32,7 +32,7 @@
           class="question-item p-4 rounded-md shadow-md bg-white mb-4"
           draggable="true"
         >
-          <div class="flex items-center">
+          <div class="flex items-center justify-content-end">
             <div class="icon-container bg-gray-200 rounded-full p-2 mr-2">
               <i @click="editQuestion(index)" class="pi pi-pencil cursor-pointer"></i>
             </div>
