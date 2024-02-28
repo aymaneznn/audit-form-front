@@ -50,7 +50,7 @@
       </div>
     </div>
 
-    <PButton class="response-button" @click="submitResponse" style="background-color: #28a745; color: #fff">Répondre</PButton>
+    <PButton class="response-button" @click="submitResponse" style="background-color: #28a745; color: #fff; border: none">Répondre</PButton>
   </div>
 </template>
 

@@ -719,7 +719,7 @@ function model() {
       options: '',
     },
   ];
-  showSuccess('', 'Model chargé');
+  showSuccess('', 'Modele chargé');
   // Scroll to the bottom of the page
   setTimeout(() => {
     const element = document.querySelector('.question-creator');

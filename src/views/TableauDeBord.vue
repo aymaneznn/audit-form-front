@@ -33,12 +33,13 @@
                       formDescription = formulaire.description ?? '';
                     "
                   />
+                  <ConfirmPopup></ConfirmPopup>
                   <PButton
                     icon="pi pi-trash"
                     class="p-button-rounded p-button-danger mb-3"
                     @click="
                       formulaireSelected = formulaire;
-                      deleteFormulaire();
+                      confirmDeleteFormulaire($event);
                     "
                   ></PButton>
                 </div>
@@ -88,7 +89,9 @@
           <p v-if="question.formulaire?.creer_par">Créé par: {{ question.formulaire.creer_par?.nom }}</p>
         </div>
       </div>
-      <PButton class="mt-3" @click="showDialog = false">Fermer</PButton>
+      <PButton class="mt-3" @click="showDialog = false" style="border: none; background-color: rgba(255, 1, 1, 0.644); color: white"
+        >Fermer</PButton
+      >
     </div>
   </PDialog>
   <Toast />
@@ -158,6 +161,25 @@ async function deleteFormulaire() {
     }
   }
 }
+import { useConfirm } from 'primevue/useconfirm';
+const confirm = useConfirm();
+const confirmDeleteFormulaire = (event: { currentTarget: never }) => {
+  confirm.require({
+    target: event.currentTarget,
+    message: 'Voulez-vous supprimer ce formulaire et toutes ses réponses associées ?',
+    icon: 'pi pi-info-circle',
+    rejectClass: 'p-button-secondary p-button-outlined p-button-sm',
+    acceptClass: 'p-button-danger p-button-sm',
+    rejectLabel: 'Annuler',
+    acceptLabel: 'Supprimer',
+    accept: () => {
+      deleteFormulaire();
+    },
+    reject: () => {
+      toast.add({ severity: 'error', summary: 'Rejeté', detail: 'Vous avez rejeté', life: 3000 });
+    },
+  });
+};
 
 async function getUrlForm(id: string) {
   url.value = window.location.href;
