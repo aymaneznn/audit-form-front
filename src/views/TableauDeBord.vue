@@ -6,8 +6,8 @@
         <template v-for="formulaire in formulaires" :key="formulaire.id">
           <PCard class="form-card">
             <template #content>
-              <div class="flex h-5rem">
-                <div class="mr-6" @click="handleFormClick(formulaire)">
+              <div class="flex justify-content-between h-auto">
+                <div class="" @click="handleFormClick(formulaire)">
                   <h2 class="form-title">{{ formulaire.titre }}</h2>
                   <div class="form-item mb-3">
                     <p class="form-creator" v-if="formulaire.creer_par">Créé par: {{ formulaire.creer_par?.nom ?? 'Unknown' }}</p>
@@ -21,7 +21,7 @@
                 <div class="question-tools">
                   <PButton
                     icon="pi pi-pencil"
-                    class="mr-3"
+                    class="mr-3 mb-3"
                     text
                     raised
                     rounded
@@ -35,7 +35,7 @@
                   />
                   <PButton
                     icon="pi pi-trash"
-                    class="p-button-rounded p-button-danger"
+                    class="p-button-rounded p-button-danger mb-3"
                     @click="
                       formulaireSelected = formulaire;
                       deleteFormulaire();
@@ -184,20 +184,6 @@ const showSuccess = (title: string, detail: string) => {
     title = 'Succès';
   }
   toast.add({ severity: 'success', summary: title, detail: detail, life: 3000 });
-};
-
-const showInfo = (title: string, detail: string) => {
-  if (title === '') {
-    title = 'Information';
-  }
-  toast.add({ severity: 'info', summary: title, detail: detail, life: 3000 });
-};
-
-const showWarn = (title: string, detail: string) => {
-  if (title === '') {
-    title = 'Attention';
-  }
-  toast.add({ severity: 'warn', summary: title, detail: detail, life: 3000 });
 };
 
 const showError = (title: string, detail: string) => {

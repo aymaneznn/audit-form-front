@@ -192,9 +192,10 @@
             v-model="dialogVisibleAddCheckbox"
             :visible="dialogVisibleAddCheckbox"
             :modal="true"
-            :showHeader="false"
+            :showHeader="true"
             :baseZIndex="1000"
             class="custom-dialog"
+            @keydown.enter="addCheckbox"
           >
             <div class="dialog-content">
               <h4 class="dialog-title">Entrez le nom de la checkbox :</h4>
@@ -212,9 +213,10 @@
             v-model="dialogVisibleAddOptionDropDown"
             :visible="dialogVisibleAddOptionDropDown"
             :modal="true"
-            :showHeader="false"
+            :showHeader="true"
             :baseZIndex="1000"
             class="custom-dialog"
+            @keydown.enter="addOptionDropDown"
           >
             <div class="dialog-content">
               <h4 class="dialog-title">Entrez le nom de l'option :</h4>
@@ -232,7 +234,7 @@
             v-model="dialogVisibleEditCheckBox"
             :visible="dialogVisibleEditCheckBox"
             :modal="true"
-            :showHeader="false"
+            :showHeader="true"
             :baseZIndex="1000"
             class="custom-dialog"
           >
@@ -292,7 +294,7 @@
             v-model="dialogVisibleEditNoOption"
             :visible="dialogVisibleEditNoOption"
             :modal="true"
-            :showHeader="false"
+            :showHeader="true"
             :baseZIndex="1000"
             class="custom-dialog"
           >
