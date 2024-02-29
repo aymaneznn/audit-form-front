@@ -630,7 +630,7 @@ function generateRandomIdWithLength(length: number) {
 }
 
 async function publieForm() {
-  const localId = generateRandomIdWithLength(50);
+  const localId = generateRandomIdWithLength(200);
   if (formName.value === '' || formDescription.value === '' || questions.value.length === 0) {
     showError('', 'Impossible de créer le formulaire');
     if (formName.value === '') {
