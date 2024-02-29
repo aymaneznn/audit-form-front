@@ -139,6 +139,8 @@ const indexInputNumber = ref(0);
 const indexInputText = ref(0);
 const indexText = ref(0);
 
+const idGroupResponse = ref('');
+
 onMounted(async () => {
   const routeParams = router.currentRoute.value.params;
   id.value = routeParams.id;
@@ -146,6 +148,8 @@ onMounted(async () => {
   if (id.value === undefined) {
     id.value = 1;
   }
+
+  idGroupResponse.value = generateRandomIdWithLength(10);
 
   questions.value = await apiService.getQuestionsByFormulaire(id.value);
 
@@ -209,6 +213,16 @@ function resetValues() {
   inputText.value = [];
 }
 
+function generateRandomIdWithLength(length: number) {
+  let result = '';
+  const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  const charactersLength = characters.length;
+  for (let i = 0; i < length; i++) {
+    result += characters.charAt(Math.floor(Math.random() * charactersLength));
+  }
+  return result;
+}
+
 const submitResponse = () => {
   try {
     let resp: unknown;
@@ -256,6 +270,7 @@ const submitResponse = () => {
         utilisateur: question.formulaire?.creer_par,
         posterLe: new Date(),
         donnees_reponse: json_resp,
+        id_group_reponse: idGroupResponse.value,
       };
       apiService.createReponse(reponse);
     });

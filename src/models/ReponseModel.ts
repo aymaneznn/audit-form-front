@@ -11,4 +11,5 @@ export default class ReponseModel {
   utilisateur?: UtilisateurModel;
   posterLe?: Date;
   donnees_reponse?: object;
+  id_group_reponse?: string;
 }
