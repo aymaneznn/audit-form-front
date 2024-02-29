@@ -228,39 +228,35 @@ const submitResponse = () => {
     let resp: unknown;
     let id_type_question: number;
     questions.value.forEach((question) => {
-      console.log(question.question);
       if (question.type_question?.type === 'checkbox') {
-        console.log((checkbox.value as { label: string; value: string }[])[question.id_option ?? 0]);
         resp = (checkbox.value as { label: string; value: string }[])[question.id_option ?? 0];
         id_type_question = QuestionType.Checkbox;
       }
       if (question.type_question?.type === 'dropdown') {
-        console.log((dropdown.value as { [key: number]: { name: string; code: string } })[question.id_option ?? 0]);
         resp = (dropdown.value as { [key: number]: { name: string; code: string } })[question.id_option ?? 0];
         id_type_question = QuestionType.Dropdown;
       }
       if (question.type_question?.type === 'multiSelect') {
-        console.log(multiSelect.value[question.id_option ?? 0]);
         resp = multiSelect.value[question.id_option ?? 0];
         id_type_question = QuestionType.MultiSelect;
       }
       if (question.type_question?.type === 'inputNumber') {
-        console.log(inputNumber.value[question.id_option ?? 0]);
         resp = inputNumber.value[question.id_option ?? 0];
         id_type_question = QuestionType.InputNumber;
       }
       if (question.type_question?.type === 'inputText') {
-        console.log((inputText.value as string[])[question.id_option ?? 0]);
         resp = (inputText.value as string[])[question.id_option ?? 0];
         id_type_question = QuestionType.InputText;
       }
       if (question.type_question?.type === 'text') {
-        console.log((text.value as string[])[question.id_option ?? 0]);
         resp = (text.value as string[])[question.id_option ?? 0];
         id_type_question = QuestionType.Text;
       }
 
       const json_resp = { data: resp };
+
+      console.log('question.formulaire', question.formulaire);
+      console.log('question', question.id);
 
       const reponse: ReponseModel = {
         id: 0,
@@ -284,15 +280,12 @@ const submitResponse = () => {
 
 function getAnswer(question: QuestionEdited) {
   if (question.type_question?.type === 'checkbox') {
-    console.log((checkbox.value as { label: string; value: string }[])[question.id_option ?? 0]);
     return (checkbox.value as { label: string; value: string }[])[question.id_option ?? 0];
   }
   if (question.type_question?.type === 'dropdown') {
-    console.log((dropdown.value as { [key: number]: { name: string; code: string } })[question.id_option ?? 0]);
     return (dropdown.value as { [key: number]: { name: string; code: string } })[question.id_option ?? 0].name;
   }
   if (question.type_question?.type === 'multiSelect') {
-    console.log(multiSelect.value[question.id_option ?? 0]);
     const res: string[] = [];
     (multiSelect.value[question.id_option ?? 0] as unknown as { name: string; code: string }[]).forEach((element) => {
       res.push(element.name);
@@ -300,15 +293,12 @@ function getAnswer(question: QuestionEdited) {
     return res;
   }
   if (question.type_question?.type === 'inputNumber') {
-    console.log(inputNumber.value[question.id_option ?? 0]);
     return inputNumber.value[question.id_option ?? 0];
   }
   if (question.type_question?.type === 'inputText') {
-    console.log((inputText.value as string[])[question.id_option ?? 0]);
     return (inputText.value as string[])[question.id_option ?? 0];
   }
   if (question.type_question?.type === 'text') {
-    console.log((text.value as string[])[question.id_option ?? 0]);
     return (text.value as string[])[question.id_option ?? 0];
   }
 
@@ -325,21 +315,6 @@ const showSuccess = (title: string, detail: string) => {
   }
   toast.add({ severity: 'success', summary: title, detail: detail, life: 3000 });
 };
-
-const showInfo = (title: string, detail: string) => {
-  if (title === '') {
-    title = 'Information';
-  }
-  toast.add({ severity: 'info', summary: title, detail: detail, life: 3000 });
-};
-
-const showWarn = (title: string, detail: string) => {
-  if (title === '') {
-    title = 'Attention';
-  }
-  toast.add({ severity: 'warn', summary: title, detail: detail, life: 3000 });
-};
-
 const showError = (title: string, detail: string) => {
   if (title === '') {
     title = 'Erreur';

@@ -105,7 +105,7 @@ onMounted(async () => {
 
 function editForm(formulaire: FormulaireModel) {
   showEditDialog.value = true;
-  apiService.getQuestionsByFormulaire(formulaire.id ?? 0).then((resolvedQuestions) => {
+  apiService.getQuestionsByFormulaire(formulaire.id ?? '').then((resolvedQuestions) => {
     questions.value = resolvedQuestions;
   });
   formulaireSelected.value = formulaire;
@@ -127,19 +127,19 @@ async function deleteFormulaire() {
   if (formulaireSelected.value) {
     try {
       // Supprimer toutes les réponses associées
-      const reponses = await apiService.getReponsesByFormulaire(formulaireSelected.value.id ?? 0);
+      const reponses = await apiService.getReponsesByFormulaire(formulaireSelected.value.id ?? '');
       for (const reponse of reponses) {
         await apiService.deleteReponseByID(reponse.id ?? 0);
       }
 
       // Supprimer toutes les questions associées
-      const questions = await apiService.getQuestionsByFormulaire(formulaireSelected.value.id ?? 0);
+      const questions = await apiService.getQuestionsByFormulaire(formulaireSelected.value.id ?? '');
       for (const question of questions) {
         await apiService.deleteQuestionByID(question.id ?? 0);
       }
 
       // Supprimer le formulaire
-      await apiService.deleteFormulaireByID(formulaireSelected.value.id ?? 0);
+      await apiService.deleteFormulaireByID(formulaireSelected.value.id ?? '');
 
       formulaires.value = await apiService.getAllFormulaires();
 

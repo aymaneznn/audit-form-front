@@ -619,7 +619,18 @@ enum QuestionType {
   SansType = 0,
 }
 
+function generateRandomIdWithLength(length: number) {
+  let result = '';
+  const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  const charactersLength = characters.length;
+  for (let i = 0; i < length; i++) {
+    result += characters.charAt(Math.floor(Math.random() * charactersLength));
+  }
+  return result;
+}
+
 async function publieForm() {
+  const localId = generateRandomIdWithLength(50);
   if (formName.value === '' || formDescription.value === '' || questions.value.length === 0) {
     showError('', 'Impossible de créer le formulaire');
     if (formName.value === '') {
@@ -631,7 +642,7 @@ async function publieForm() {
     }
   } else {
     const formulaire: FormulaireModel = {
-      id: undefined,
+      id: localId,
       titre: formName.value,
       description: formDescription.value,
       creer_par: {
@@ -645,9 +656,9 @@ async function publieForm() {
     };
     await apiService.createFormulaire(formulaire);
 
-    const formulaires: FormulaireModel[] = await apiService.getAllFormulaires();
+    //const formulaires: FormulaireModel[] = await apiService.getAllFormulaires();
     questions.value.forEach((element) => {
-      formulaire.id = formulaires[formulaires.length - 1]?.id ?? 0;
+      formulaire.id = localId;
       let indexType: QuestionType = QuestionType.SansType;
       switch (element.type) {
         case 'checkbox':
@@ -693,6 +704,11 @@ async function publieForm() {
 
 function model() {
   questions.value = [
+    {
+      question: 'Quelle votre nom ?',
+      type: 'inputText',
+      options: null,
+    },
     {
       question: 'Quelle est votre couleur préférée ?',
       type: 'dropdown',

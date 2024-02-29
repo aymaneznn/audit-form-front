@@ -24,7 +24,7 @@ export function useApiService() {
       return response.data.body;
     },
 
-    getQuestionsByFormulaire: async (formulaireId: number): Promise<QuestionModel[]> => {
+    getQuestionsByFormulaire: async (formulaireId: string): Promise<QuestionModel[]> => {
       const response = await axiosInstance.get(`/question/get-questions-by-formulaire/${formulaireId}`);
       return response.data.body;
     },
@@ -39,22 +39,22 @@ export function useApiService() {
       return response.data.body;
     },
 
-    getParametreAvanceByFormulaire: async (formulaireId: number): Promise<ParametrageAvanceModel[]> => {
+    getParametreAvanceByFormulaire: async (formulaireId: string): Promise<ParametrageAvanceModel[]> => {
       const response = await axiosInstance.get(`/parametrage-avance-par-formulaire/${formulaireId}`);
       return response.data.body;
     },
 
-    getDonneesStatistiquesByFormulaire: async (formulaireId: number): Promise<DonneesStatistiqueModel[]> => {
+    getDonneesStatistiquesByFormulaire: async (formulaireId: string): Promise<DonneesStatistiqueModel[]> => {
       const response = await axiosInstance.get(`/donnees-statistiques-par-formulaire/${formulaireId}`);
       return response.data.body;
     },
 
-    getGestionUtilisateurByFormulaire: async (formulaireId: number): Promise<GestionUtilisateurModel[]> => {
+    getGestionUtilisateurByFormulaire: async (formulaireId: string): Promise<GestionUtilisateurModel[]> => {
       const response = await axiosInstance.get(`/gestion-utilisateur-par-formulaire/${formulaireId}`);
       return response.data.body;
     },
 
-    getReponsesByFormulaire: async (formulaireId: number): Promise<ReponseModel[]> => {
+    getReponsesByFormulaire: async (formulaireId: string): Promise<ReponseModel[]> => {
       const response = await axiosInstance.get(`/reponse/get-reponses-by-formulaire/${formulaireId}`);
       return response.data.body;
     },
@@ -71,7 +71,7 @@ export function useApiService() {
       await axiosInstance.post('/reponse/create-reponse', reponse);
     },
 
-    deleteFormulaireByID: async (formulaireId: number): Promise<void> => {
+    deleteFormulaireByID: async (formulaireId: string): Promise<void> => {
       await axiosInstance.delete(`/formulaire/delete-formulaire/${formulaireId}`);
     },
 
