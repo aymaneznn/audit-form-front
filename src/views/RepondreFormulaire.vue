@@ -1,5 +1,5 @@
 <template>
-  <div class="response-page">
+  <div class="response-page" v-if="!formSubmited">
     <PButton class="nav-button" @click="goBack" style="background-color: #007bff; color: #fff; margin-right: 10px">
       <i class="pi pi-arrow-left mr-3"></i> Retour
     </PButton>
@@ -17,7 +17,7 @@
           </div>
         </div>
         <div v-else-if="question.type_question?.type === 'text'">
-          <Textarea rows="5" cols="30" class="w-full border rounded p-2" v-model="text[0]" />
+          <Textarea rows="5" cols="30" class="w-full border rounded p-2" v-model="text[question.id_option ?? 0]" />
         </div>
         <template v-else-if="question.type_question?.type === 'dropdown'">
           <Dropdown
@@ -29,10 +29,15 @@
           />
         </template>
         <div v-else-if="question.type_question?.type === 'inputNumber'">
-          <InputNumber v-model="inputNumber[0]" inputId="minmaxfraction" :minFractionDigits="1" :maxFractionDigits="2" />
+          <InputNumber
+            v-model="inputNumber[question.id_option ?? 0]"
+            inputId="minmaxfraction"
+            :minFractionDigits="1"
+            :maxFractionDigits="2"
+          />
         </div>
         <div v-else-if="question.type_question?.type === 'inputText'">
-          <InputText v-model="inputText[0]" />
+          <InputText v-model="inputText[question.id_option ?? 0]" />
         </div>
         <div v-else-if="question.type_question?.type === 'multiSelect'">
           <MultiSelect
@@ -49,6 +54,35 @@
 
     <PButton class="response-button" @click="submitResponse" style="background-color: #28a745; color: #fff; border: none">Répondre</PButton>
   </div>
+  <div class="p-5" v-if="formSubmited">
+    <PButton class="nav-button mb-2" @click="goBack" style="background-color: #007bff; color: #fff; margin-right: 10px">
+      <i class="pi pi-arrow-left mr-3"></i> Retour
+    </PButton>
+    <div class="card">
+      <Toast />
+      <h4 class="dialog-title">Réponses au formulaire :</h4>
+      <Panel v-for="question in questions" :key="question.id" class="response-item" toggleable>
+        <template #header>
+          <div class="flex align-items-center gap-2">
+            <span class="font-bold">{{ question.question }}</span>
+          </div>
+        </template>
+        <p class="m-0">
+          {{ getAnswer(question) }}
+        </p>
+        <template #footer>
+          <div class="flex flex-wrap align-items-center justify-content-between gap-3">
+            <div class="flex align-items-center gap-2">
+              <span class="p-text-secondary">type : {{ question.type_question?.type }} </span>
+            </div>
+            <span class="p-text-secondary">formulaire : {{ question.formulaire?.titre }}</span>
+          </div>
+        </template>
+      </Panel>
+    </div>
+  </div>
+
+  <Toast />
 </template>
 
 <script setup lang="ts">
@@ -60,9 +94,9 @@ import Dropdown from 'primevue/dropdown';
 import Checkbox from 'primevue/checkbox';
 import InputNumber from 'primevue/inputnumber';
 import MultiSelect from 'primevue/multiselect';
+import Panel from 'primevue/panel';
 
 import { useApiService } from '@/composables/GestionFormulaireService';
-import QuestionModel from '@/models/QuestionModel';
 import type FormulaireModel from '@/models/FormulaireModel';
 import type ReponseModel from '@/models/ReponseModel';
 import type TypeQuestionModel from '@/models/TypeQuestionModel';
@@ -96,10 +130,14 @@ type QuestionEdited = {
 };
 
 const questions = ref<QuestionEdited[]>([]);
+const formSubmited = ref(false);
 
 const indexChecked = ref(0);
 const indexDropdown = ref(0);
 const indexMultiSelect = ref(0);
+const indexInputNumber = ref(0);
+const indexInputText = ref(0);
+const indexText = ref(0);
 
 onMounted(async () => {
   const routeParams = router.currentRoute.value.params;
@@ -133,19 +171,161 @@ onMounted(async () => {
         indexMultiSelect.value++;
       }
     }
+    if (question.type_question?.type === 'inputNumber') {
+      question.id_option = indexInputNumber.value;
+      indexInputNumber.value++;
+    }
+    if (question.type_question?.type === 'inputText') {
+      question.id_option = indexInputText.value;
+      indexInputText.value++;
+    }
+    if (question.type_question?.type === 'text') {
+      question.id_option = indexText.value;
+      indexText.value++;
+    }
   });
-  console.log(checkboxs.value);
-  console.log(dropdowns.value);
-  console.log(multiSelects.value);
 });
 
 const goBack = () => {
-  // Utilisez le routeur pour revenir à la page précédente
   router.go(-1);
 };
 
+enum QuestionType {
+  Checkbox = 1,
+  Text = 2,
+  Dropdown = 3,
+  InputNumber = 4,
+  InputText = 5,
+  MultiSelect = 6,
+  SansType = 0,
+}
+
+function resetValues() {
+  checkbox.value = [];
+  text.value = [];
+  dropdown.value = [];
+  multiSelect.value = [];
+  inputNumber.value = [];
+  inputText.value = [];
+}
+
 const submitResponse = () => {
-  // Logique pour soumettre les réponses
+  try {
+    let resp: unknown;
+    let id_type_question: number;
+    questions.value.forEach((question) => {
+      console.log(question.question);
+      if (question.type_question?.type === 'checkbox') {
+        console.log((checkbox.value as { label: string; value: string }[])[question.id_option ?? 0]);
+        resp = (checkbox.value as { label: string; value: string }[])[question.id_option ?? 0];
+        id_type_question = QuestionType.Checkbox;
+      }
+      if (question.type_question?.type === 'dropdown') {
+        console.log((dropdown.value as { [key: number]: { name: string; code: string } })[question.id_option ?? 0]);
+        resp = (dropdown.value as { [key: number]: { name: string; code: string } })[question.id_option ?? 0];
+        id_type_question = QuestionType.Dropdown;
+      }
+      if (question.type_question?.type === 'multiSelect') {
+        console.log(multiSelect.value[question.id_option ?? 0]);
+        resp = multiSelect.value[question.id_option ?? 0];
+        id_type_question = QuestionType.MultiSelect;
+      }
+      if (question.type_question?.type === 'inputNumber') {
+        console.log(inputNumber.value[question.id_option ?? 0]);
+        resp = inputNumber.value[question.id_option ?? 0];
+        id_type_question = QuestionType.InputNumber;
+      }
+      if (question.type_question?.type === 'inputText') {
+        console.log((inputText.value as string[])[question.id_option ?? 0]);
+        resp = (inputText.value as string[])[question.id_option ?? 0];
+        id_type_question = QuestionType.InputText;
+      }
+      if (question.type_question?.type === 'text') {
+        console.log((text.value as string[])[question.id_option ?? 0]);
+        resp = (text.value as string[])[question.id_option ?? 0];
+        id_type_question = QuestionType.Text;
+      }
+
+      const json_resp = { data: resp };
+
+      const reponse: ReponseModel = {
+        id: 0,
+        formulaire: question.formulaire,
+        question: question,
+        typeReponse: { id: id_type_question, type: question.type_question?.type } as TypeQuestionModel,
+        utilisateur: question.formulaire?.creer_par,
+        posterLe: new Date(),
+        donnees_reponse: json_resp,
+      };
+      apiService.createReponse(reponse);
+    });
+    showSuccess('', 'Réponse enregistrée avec succès');
+    formSubmited.value = true;
+  } catch (error) {
+    console.error(error);
+    showError('Erreur', "Erreur lors de l'enregistrement de la réponse");
+  }
+};
+
+function getAnswer(question: QuestionEdited) {
+  if (question.type_question?.type === 'checkbox') {
+    console.log((checkbox.value as { label: string; value: string }[])[question.id_option ?? 0]);
+    return (checkbox.value as { label: string; value: string }[])[question.id_option ?? 0];
+  }
+  if (question.type_question?.type === 'dropdown') {
+    console.log((dropdown.value as { [key: number]: { name: string; code: string } })[question.id_option ?? 0]);
+    return (dropdown.value as { [key: number]: { name: string; code: string } })[question.id_option ?? 0];
+  }
+  if (question.type_question?.type === 'multiSelect') {
+    console.log(multiSelect.value[question.id_option ?? 0]);
+    return multiSelect.value[question.id_option ?? 0];
+  }
+  if (question.type_question?.type === 'inputNumber') {
+    console.log(inputNumber.value[question.id_option ?? 0]);
+    return inputNumber.value[question.id_option ?? 0];
+  }
+  if (question.type_question?.type === 'inputText') {
+    console.log((inputText.value as string[])[question.id_option ?? 0]);
+    return (inputText.value as string[])[question.id_option ?? 0];
+  }
+  if (question.type_question?.type === 'text') {
+    console.log((text.value as string[])[question.id_option ?? 0]);
+    return (text.value as string[])[question.id_option ?? 0];
+  }
+
+  resetValues();
+}
+
+import { useToast } from 'primevue/usetoast';
+
+const toast = useToast();
+
+const showSuccess = (title: string, detail: string) => {
+  if (title === '') {
+    title = 'Succès';
+  }
+  toast.add({ severity: 'success', summary: title, detail: detail, life: 3000 });
+};
+
+const showInfo = (title: string, detail: string) => {
+  if (title === '') {
+    title = 'Information';
+  }
+  toast.add({ severity: 'info', summary: title, detail: detail, life: 3000 });
+};
+
+const showWarn = (title: string, detail: string) => {
+  if (title === '') {
+    title = 'Attention';
+  }
+  toast.add({ severity: 'warn', summary: title, detail: detail, life: 3000 });
+};
+
+const showError = (title: string, detail: string) => {
+  if (title === '') {
+    title = 'Erreur';
+  }
+  toast.add({ severity: 'error', summary: title, detail: detail, life: 3000 });
 };
 </script>
 
@@ -203,5 +383,45 @@ const submitResponse = () => {
 
 .response-button {
   margin-top: 20px;
+}
+
+/* Style for success message */
+.success-message {
+  color: #4caf50;
+}
+
+/* Style for the response summary container */
+.response-summary {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  margin-top: 20px;
+  border: 1px solid #ddd;
+  padding: 3%;
+  border-radius: 8px;
+  background-color: #fff;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Style for the question and answer items */
+.response-item {
+  list-style-type: none;
+  margin-bottom: 10px;
+}
+
+/* Style for the summary list */
+.summary-list {
+  padding: 0;
+}
+
+/* Style for the question text */
+.question {
+  font-weight: bold;
+  margin-right: 5px;
+}
+
+/* Style for the answer text */
+.answer {
+  color: #333;
 }
 </style>
