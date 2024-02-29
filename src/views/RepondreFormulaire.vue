@@ -274,11 +274,15 @@ function getAnswer(question: QuestionEdited) {
   }
   if (question.type_question?.type === 'dropdown') {
     console.log((dropdown.value as { [key: number]: { name: string; code: string } })[question.id_option ?? 0]);
-    return (dropdown.value as { [key: number]: { name: string; code: string } })[question.id_option ?? 0];
+    return (dropdown.value as { [key: number]: { name: string; code: string } })[question.id_option ?? 0].name;
   }
   if (question.type_question?.type === 'multiSelect') {
     console.log(multiSelect.value[question.id_option ?? 0]);
-    return multiSelect.value[question.id_option ?? 0];
+    const res: string[] = [];
+    (multiSelect.value[question.id_option ?? 0] as unknown as { name: string; code: string }[]).forEach((element) => {
+      res.push(element.name);
+    });
+    return res;
   }
   if (question.type_question?.type === 'inputNumber') {
     console.log(inputNumber.value[question.id_option ?? 0]);
