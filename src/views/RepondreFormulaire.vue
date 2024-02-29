@@ -11,36 +11,33 @@
       </div>
       <div class="question-body">
         <div v-if="question.type_question?.type === 'checkbox'">
-          <Checkbox
-            v-model="checkbox"
-            :inputId="`item${question.id}`"
-            :name="JSON.parse(question.options_question as any)?.value ?? ''"
-            :value="JSON.parse(question.options_question as any)?.value ?? ''"
-          />
-          <label :for="`item${question.id}`" class="ml-2">{{ JSON.parse(question.options_question as any)?.label ?? '' }}</label>
+          <div v-for="(item, i) in checkboxs[question.id_option ?? 0]" :key="i" class="checkbox-item">
+            <Checkbox v-model="checkbox[question.id_option ?? 0]" inputId="p" :value="item.label" />
+            <label for="p" class="ml-2">{{ item.label }}</label>
+          </div>
         </div>
         <div v-else-if="question.type_question?.type === 'text'">
-          <Textarea rows="5" cols="30" class="w-full border rounded p-2" v-model="text" />
+          <Textarea rows="5" cols="30" class="w-full border rounded p-2" v-model="text[0]" />
         </div>
         <template v-else-if="question.type_question?.type === 'dropdown'">
           <Dropdown
-            v-model="dropdown"
-            :options="JSON.parse(question.options_question as any)"
+            v-model="dropdown[question.id_option ?? 0]"
+            :options="dropdowns[question.id_option ?? 0]"
             optionLabel="name"
             placeholder="Sélectionnez un élément"
             class="w-full md:w-14rem"
           />
         </template>
         <div v-else-if="question.type_question?.type === 'inputNumber'">
-          <InputNumber v-model="inputNumber" inputId="minmaxfraction" :minFractionDigits="1" :maxFractionDigits="2" />
+          <InputNumber v-model="inputNumber[0]" inputId="minmaxfraction" :minFractionDigits="1" :maxFractionDigits="2" />
         </div>
         <div v-else-if="question.type_question?.type === 'inputText'">
-          <InputText v-model="inputText" />
+          <InputText v-model="inputText[0]" />
         </div>
         <div v-else-if="question.type_question?.type === 'multiSelect'">
           <MultiSelect
-            v-model="dropdown"
-            :options="JSON.parse(question.options_question as any)"
+            v-model="multiSelect[question.id_option ?? 0]"
+            :options="multiSelects[question.id_option ?? 0]"
             optionLabel="name"
             placeholder="Selectionnez un élément"
             :maxSelectedLabels="3"
@@ -66,19 +63,43 @@ import MultiSelect from 'primevue/multiselect';
 
 import { useApiService } from '@/composables/GestionFormulaireService';
 import QuestionModel from '@/models/QuestionModel';
+import type FormulaireModel from '@/models/FormulaireModel';
+import type ReponseModel from '@/models/ReponseModel';
+import type TypeQuestionModel from '@/models/TypeQuestionModel';
 const apiService = useApiService();
 
 const router = useRouter();
 const id = ref();
 
+type CheckboxType = { label: string; value: string };
+
 const checkbox = ref<{ label: string; value: string }[]>([]);
-const checkboxs = ref<[]>([]);
+const checkboxs = ref<CheckboxType[]>([]);
 const text = ref<string[]>([]);
 const dropdown = ref<{ name: string; code: string }[]>([]);
-const inputNumber = ref<number[]>();
+const dropdowns = ref<unknown[]>([]);
+
+const multiSelect = ref<{ name: string; code: string }[]>([]);
+const multiSelects = ref<unknown[]>([]);
+
+const inputNumber = ref<number[]>([]);
 const inputText = ref<string[]>([]);
 
-const questions = ref<QuestionModel[]>([]);
+type QuestionEdited = {
+  id?: number;
+  formulaire?: FormulaireModel;
+  question?: string;
+  type_question?: TypeQuestionModel;
+  options_question?: string;
+  reponses?: ReponseModel[];
+  id_option?: number;
+};
+
+const questions = ref<QuestionEdited[]>([]);
+
+const indexChecked = ref(0);
+const indexDropdown = ref(0);
+const indexMultiSelect = ref(0);
 
 onMounted(async () => {
   const routeParams = router.currentRoute.value.params;
@@ -92,11 +113,30 @@ onMounted(async () => {
 
   questions.value.forEach((question) => {
     if (question.type_question?.type === 'checkbox') {
-      checkboxs.value.push(JSON.parse(question.options_question) as { label: string; value: string }[]);
+      if (question.options_question) {
+        checkboxs.value.push(JSON.parse(question.options_question));
+        question.id_option = indexChecked.value;
+        indexChecked.value++;
+      }
+    }
+    if (question.type_question?.type === 'dropdown') {
+      if (question.options_question) {
+        dropdowns.value.push(JSON.parse(question.options_question));
+        question.id_option = indexDropdown.value;
+        indexDropdown.value++;
+      }
+    }
+    if (question.type_question?.type === 'multiSelect') {
+      if (question.options_question) {
+        multiSelects.value.push(JSON.parse(question.options_question));
+        question.id_option = indexMultiSelect.value;
+        indexMultiSelect.value++;
+      }
     }
   });
-  console.log(questions.value);
   console.log(checkboxs.value);
+  console.log(dropdowns.value);
+  console.log(multiSelects.value);
 });
 
 const goBack = () => {
