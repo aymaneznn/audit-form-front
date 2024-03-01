@@ -32,7 +32,7 @@
         <template v-else-if="question.type_question?.type === 'dropdown'">
           <Dropdown
             v-model="dropdown[question.id_option ?? 0]"
-            :options="dropdowns[question.id_option ?? 0]"
+            :options="dropdowns[question.id_option ?? 0] as any[]"
             optionLabel="name"
             placeholder="Sélectionnez un élément"
             class="w-full md:w-14rem"
@@ -52,7 +52,7 @@
         <div v-else-if="question.type_question?.type === 'multiSelect'">
           <MultiSelect
             v-model="multiSelect[question.id_option ?? 0]"
-            :options="multiSelects[question.id_option ?? 0]"
+            :options="multiSelects[question.id_option ?? 0] as any[]"
             optionLabel="name"
             placeholder="Selectionnez un élément"
             :maxSelectedLabels="3"
