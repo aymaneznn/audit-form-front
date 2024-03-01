@@ -353,6 +353,8 @@ import QuestionModel from '@/models/QuestionModel';
 const toast = useToast();
 const apiService = useApiService();
 
+const questionCordonnes = ref('Vos coordonnées : ');
+
 const editingTitle = ref(false);
 const editedQuestion = ref<string | undefined>('');
 
@@ -424,7 +426,7 @@ onMounted(async () => {
   await apiService.getAllFormulaires();
   questions.value = [
     {
-      question: 'Quelle votre nom ?',
+      question: questionCordonnes.value,
       type: 'inputText',
       options: null,
     },
@@ -705,7 +707,7 @@ async function publieForm() {
 function model() {
   questions.value = [
     {
-      question: 'Quelle votre nom ?',
+      question: questionCordonnes.value,
       type: 'inputText',
       options: null,
     },

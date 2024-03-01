@@ -4,9 +4,19 @@
       <i class="pi pi-arrow-left mr-3"></i> Retour
     </PButton>
     <h4 class="dialog-title">Réponses au formulaire :</h4>
-    <div v-for="question in questions" :key="question.id" class="question-item">
+    <div
+      v-for="question in questions"
+      :key="question.id"
+      class="question-item"
+      :style="{ 'border-top': question.question === questionCordonnes ? '9px solid #8a2be2' : '' }"
+    >
+      <div>
+        <div v-if="question.question === questionCordonnes" class="mb-3 p-text-secondary" style="color: rgb(216, 96, 96)">
+          <p>Champ obligatoire</p>
+        </div>
+      </div>
       <div class="question-header">
-        <h3>{{ question.question }}</h3>
+        <h3>{{ question.question }} <span v-if="question.question === questionCordonnes" style="color: red"> *</span></h3>
         <p>Type : {{ question.type_question?.type }}</p>
       </div>
       <div class="question-body">
@@ -141,6 +151,8 @@ const indexText = ref(0);
 
 const idGroupResponse = ref('');
 
+const questionCordonnes = ref('Vos coordonnées : ');
+
 onMounted(async () => {
   const routeParams = router.currentRoute.value.params;
   id.value = routeParams.id;
@@ -152,6 +164,16 @@ onMounted(async () => {
   idGroupResponse.value = generateRandomIdWithLength(10);
 
   questions.value = await apiService.getQuestionsByFormulaire(id.value);
+
+  questions.value.sort((a, b) => {
+    if (a.question === questionCordonnes.value) {
+      return -1;
+    } else if (b.question === questionCordonnes.value) {
+      return 1;
+    } else {
+      return 0;
+    }
+  });
 
   questions.value.forEach((question) => {
     if (question.type_question?.type === 'checkbox') {
@@ -225,53 +247,62 @@ function generateRandomIdWithLength(length: number) {
 
 const submitResponse = () => {
   try {
-    let resp: unknown;
-    let id_type_question: number;
-    questions.value.forEach((question) => {
-      if (question.type_question?.type === 'checkbox') {
-        resp = (checkbox.value as { label: string; value: string }[])[question.id_option ?? 0];
-        id_type_question = QuestionType.Checkbox;
-      }
-      if (question.type_question?.type === 'dropdown') {
-        resp = (dropdown.value as { [key: number]: { name: string; code: string } })[question.id_option ?? 0];
-        id_type_question = QuestionType.Dropdown;
-      }
-      if (question.type_question?.type === 'multiSelect') {
-        resp = multiSelect.value[question.id_option ?? 0];
-        id_type_question = QuestionType.MultiSelect;
-      }
-      if (question.type_question?.type === 'inputNumber') {
-        resp = inputNumber.value[question.id_option ?? 0];
-        id_type_question = QuestionType.InputNumber;
-      }
-      if (question.type_question?.type === 'inputText') {
-        resp = (inputText.value as string[])[question.id_option ?? 0];
-        id_type_question = QuestionType.InputText;
-      }
-      if (question.type_question?.type === 'text') {
-        resp = (text.value as string[])[question.id_option ?? 0];
-        id_type_question = QuestionType.Text;
-      }
+    // Check if the coordinates question is present and filled
+    const coordinatesQuestion = questions.value.find((question) => question.question === questionCordonnes.value);
+    const coordinatesResp = coordinatesQuestion ? (inputText.value as string[])[coordinatesQuestion.id_option ?? 0] : null;
+    const isCoordinatesFilled = coordinatesResp && coordinatesResp.trim() !== '';
 
-      const json_resp = { data: resp };
+    if (coordinatesQuestion && !isCoordinatesFilled) {
+      showError('Erreur', 'Veuillez remplir le champ obligatoire');
+    } else {
+      let resp: unknown;
+      let id_type_question: number;
+      questions.value.forEach((question) => {
+        if (question.type_question?.type === 'checkbox') {
+          resp = (checkbox.value as { label: string; value: string }[])[question.id_option ?? 0];
+          id_type_question = QuestionType.Checkbox;
+        }
+        if (question.type_question?.type === 'dropdown') {
+          resp = (dropdown.value as { [key: number]: { name: string; code: string } })[question.id_option ?? 0];
+          id_type_question = QuestionType.Dropdown;
+        }
+        if (question.type_question?.type === 'multiSelect') {
+          resp = multiSelect.value[question.id_option ?? 0];
+          id_type_question = QuestionType.MultiSelect;
+        }
+        if (question.type_question?.type === 'inputNumber') {
+          resp = inputNumber.value[question.id_option ?? 0];
+          id_type_question = QuestionType.InputNumber;
+        }
+        if (question.type_question?.type === 'inputText') {
+          resp = (inputText.value as string[])[question.id_option ?? 0];
+          id_type_question = QuestionType.InputText;
+        }
+        if (question.type_question?.type === 'text') {
+          resp = (text.value as string[])[question.id_option ?? 0];
+          id_type_question = QuestionType.Text;
+        }
 
-      console.log('question.formulaire', question.formulaire);
-      console.log('question', question.id);
+        const json_resp = { data: resp };
 
-      const reponse: ReponseModel = {
-        id: 0,
-        formulaire: question.formulaire,
-        question: question,
-        typeReponse: { id: id_type_question, type: question.type_question?.type } as TypeQuestionModel,
-        utilisateur: question.formulaire?.creer_par,
-        posterLe: new Date(),
-        donnees_reponse: json_resp,
-        id_group_reponse: idGroupResponse.value,
-      };
-      apiService.createReponse(reponse);
-    });
-    showSuccess('', 'Réponse enregistrée avec succès');
-    formSubmited.value = true;
+        console.log('question.formulaire', question.formulaire);
+        console.log('question', question.id);
+
+        const reponse: ReponseModel = {
+          id: 0,
+          formulaire: question.formulaire,
+          question: question,
+          typeReponse: { id: id_type_question, type: question.type_question?.type } as TypeQuestionModel,
+          utilisateur: question.formulaire?.creer_par,
+          posterLe: new Date(),
+          donnees_reponse: json_resp,
+          id_group_reponse: idGroupResponse.value,
+        };
+        apiService.createReponse(reponse);
+      });
+      showSuccess('', 'Réponse enregistrée avec succès');
+      formSubmited.value = true;
+    }
   } catch (error) {
     console.error(error);
     showError('Erreur', "Erreur lors de l'enregistrement de la réponse");
@@ -418,5 +449,25 @@ const showError = (title: string, detail: string) => {
 /* Style for the answer text */
 .answer {
   color: #333;
+}
+
+.form-header {
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  padding: 1rem;
+  width: 80%;
+  border-top: 9px solid #8a2be2;
+  cursor: pointer;
+}
+
+.form-header,
+.other-header {
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  padding: 1rem;
+  width: 80%;
+  border-top: 9px solid #8a2be2;
+  cursor: pointer;
+  transition: border-left 0.1s ease-in-out;
 }
 </style>
