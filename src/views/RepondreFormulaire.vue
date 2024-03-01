@@ -283,23 +283,24 @@ function getAnswer(question: QuestionEdited) {
     return (checkbox.value as { label: string; value: string }[])[question.id_option ?? 0];
   }
   if (question.type_question?.type === 'dropdown') {
-    return (dropdown.value as { [key: number]: { name: string; code: string } })[question.id_option ?? 0].name;
+    return (dropdown.value as { [key: number]: { name: string; code: string } })[question.id_option ?? 0]?.name ?? '';
   }
   if (question.type_question?.type === 'multiSelect') {
     const res: string[] = [];
-    (multiSelect.value[question.id_option ?? 0] as unknown as { name: string; code: string }[]).forEach((element) => {
+
+    (multiSelect.value[question.id_option ?? 0] as unknown as { name: string; code: string }[])?.forEach((element) => {
       res.push(element.name);
     });
-    return res;
+    return res ?? '';
   }
   if (question.type_question?.type === 'inputNumber') {
-    return inputNumber.value[question.id_option ?? 0];
+    return inputNumber.value[question.id_option ?? 0] ?? '';
   }
   if (question.type_question?.type === 'inputText') {
-    return (inputText.value as string[])[question.id_option ?? 0];
+    return (inputText.value as string[])[question.id_option ?? 0] ?? '';
   }
   if (question.type_question?.type === 'text') {
-    return (text.value as string[])[question.id_option ?? 0];
+    return (text.value as string[])[question.id_option ?? 0] ?? '';
   }
 
   resetValues();
