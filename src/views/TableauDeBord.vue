@@ -12,9 +12,12 @@
                   <div class="form-item mb-3">
                     <p class="form-creator" v-if="formulaire.creer_par">Créé par: {{ formulaire.creer_par?.nom ?? 'Unknown' }}</p>
                   </div>
-                  <div class="form-footer">
-                    <a class="form-url" :href="url" @click="getUrlForm(formulaire.id ? formulaire.id.toString() : '')">
+                  <div class="form-footer flex flex-column">
+                    <a class="form-url mb-3" :href="url" @click="getUrlForm(formulaire.id ? formulaire.id.toString() : '')">
                       URL du formulaire
+                    </a>
+                    <a class="form-url" :href="url" @click="getUrlResponseForm(formulaire.id ? formulaire.id.toString() : '')">
+                      Voir les réponses
                     </a>
                   </div>
                 </div>
@@ -173,6 +176,12 @@ async function getUrlForm(id: string) {
   url.value = window.location.href;
   url.value = url.value.split('/').slice(0, -1).join('/');
   url.value = url.value + '/reponse/' + id;
+}
+
+async function getUrlResponseForm(id: string) {
+  url.value = window.location.href;
+  url.value = url.value.split('/').slice(0, -1).join('/');
+  url.value = url.value + '/dashboard-reponse/' + id;
 }
 
 async function getReponsesByQuestion(question: QuestionModel) {

@@ -30,6 +30,11 @@ const router = createRouter({
       name: 'reponse',
       component: () => import('@/views/RepondreFormulaire.vue'),
     },
+    {
+      path: '/dashboard-reponse/:id',
+      name: 'reponse-formulaire',
+      component: () => import('@/views/ReponseFormulaire.vue'),
+    },
   ],
 });
 
