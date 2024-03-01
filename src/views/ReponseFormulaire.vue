@@ -27,7 +27,7 @@
           <div>
             <h3>Détails de la Réponse</h3>
             <div class="card">
-              <Panel v-for="question in reponses" :key="question.id" class="response-item" toggleable>
+              <Panel v-for="question in reponses" :key="question.id" class="response-item mb-2" toggleable>
                 <template #header>
                   <div class="flex align-items-center gap-2">
                     <span class="font-bold">{{ question.question?.question }}</span>
