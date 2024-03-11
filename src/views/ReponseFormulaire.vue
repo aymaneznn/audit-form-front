@@ -33,7 +33,7 @@
                     <span class="font-bold">{{ question.question?.question }}</span>
                   </div>
                 </template>
-                <p class="m-0">{{ question.donnees_reponse['data'] }}</p>
+                <p class="m-0">{{ question.donnees_reponse?.data }}</p>
               </Panel>
             </div>
             <PButton label="Fermer" @click="closeResponseDialog" class="p-button-secondary"></PButton>
@@ -75,6 +75,9 @@ const responseDialogVisible = ref(false);
 const selectedRowData = ref(null);
 const nbQuestionNonRepondue = ref(0);
 
+const chartData = ref();
+const chartOptions = ref();
+
 onMounted(async () => {
   const routeParams = router.currentRoute.value.params;
   id.value = routeParams.id;
@@ -86,7 +89,79 @@ onMounted(async () => {
   reponses.value = await apiService.getReponsesByFormulaire(id.value);
   loadReponse();
   reponsesToDataTable.value = groupReponsesByGroup(reponses.value);
+  chartData.value = setChartData();
+  chartOptions.value = setChartOptions();
 });
+
+const setChartData = () => {
+  const documentStyle = getComputedStyle(document.documentElement);
+
+  return {
+    labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
+    datasets: [
+      {
+        type: 'bar',
+        label: 'Dataset 1',
+        backgroundColor: documentStyle.getPropertyValue('--cyan-500'),
+        data: [50, 25, 12, 48, 90, 76, 42],
+      },
+      {
+        type: 'bar',
+        label: 'Dataset 2',
+        backgroundColor: documentStyle.getPropertyValue('--gray-500'),
+        data: [21, 84, 24, 75, 37, 65, 34],
+      },
+      {
+        type: 'bar',
+        label: 'Dataset 3',
+        backgroundColor: documentStyle.getPropertyValue('--orange-500'),
+        data: [41, 52, 24, 74, 23, 21, 32],
+      },
+    ],
+  };
+};
+const setChartOptions = () => {
+  const documentStyle = getComputedStyle(document.documentElement);
+  const textColor = documentStyle.getPropertyValue('--text-color');
+  const textColorSecondary = documentStyle.getPropertyValue('--text-color-secondary');
+  const surfaceBorder = documentStyle.getPropertyValue('--surface-border');
+
+  return {
+    maintainAspectRatio: false,
+    aspectRatio: 0.8,
+    plugins: {
+      tooltips: {
+        mode: 'index',
+        intersect: false,
+      },
+      legend: {
+        labels: {
+          color: textColor,
+        },
+      },
+    },
+    scales: {
+      x: {
+        stacked: true,
+        ticks: {
+          color: textColorSecondary,
+        },
+        grid: {
+          color: surfaceBorder,
+        },
+      },
+      y: {
+        stacked: true,
+        ticks: {
+          color: textColorSecondary,
+        },
+        grid: {
+          color: surfaceBorder,
+        },
+      },
+    },
+  };
+};
 
 function groupReponsesByGroup(reponses: ReponseModel[]): ReponseModel[] {
   const groupedReponses: ReponseModel[] = [];
@@ -119,7 +194,7 @@ function groupReponsesByGroup(reponses: ReponseModel[]): ReponseModel[] {
   return groupedReponses;
 }
 
-async function showResponseDialog(rowData) {
+async function showResponseDialog(rowData: { id_group_reponse: string }) {
   selectedRowData.value = rowData;
   responseDialogVisible.value = true;
   reponses.value = await apiService.getReponsesByFormulaire(id.value);
@@ -136,7 +211,7 @@ async function showResponseDialog(rowData) {
       reponse.donnees_reponse.data = reponse.donnees_reponse.data.map((item) => item.code);
     }
   });
-  reponses.value = reponses.value.filter((reponse) => reponse.id_group_reponse === rowData.id_group_reponse);
+  reponses.value = reponses.value.filter((reponse) => reponse.id_group_reponse === rowData?.id_group_reponse);
 }
 
 function loadReponse() {
@@ -150,7 +225,7 @@ function loadReponse() {
       Array.isArray(reponse.donnees_reponse.data) &&
       reponse.donnees_reponse.data.every((item) => typeof item === 'object' && 'code' in item && 'name' in item)
     ) {
-      reponse.donnees_reponse.data = reponse.donnees_reponse.data.map((item) => item.code);
+      reponse.donnees_reponse.data = reponse.donnees_reponse.data.map((item: { code: unknown }) => item.code);
     }
   });
 }

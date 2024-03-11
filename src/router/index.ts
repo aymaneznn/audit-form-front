@@ -11,7 +11,7 @@ const router = createRouter({
       children: [
         {
           path: '',
-          name: 'tableau-de-bord',
+          name: 'tableau-de-bord-formulaire',
           component: () => import('@/views/TableauDeBord.vue'),
         },
         {

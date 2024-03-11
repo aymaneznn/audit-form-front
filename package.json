@@ -1,7 +1,12 @@
 {
   "name": "audit-form-lib",
   "version": "0.0.3",
-  "files": ["dist/*", "*.ts", "*.json", "*.js"],
+  "files": [
+    "dist/*",
+    "*.ts",
+    "*.json",
+    "*.js"
+  ],
   "private": false,
   "type": "module",
   "scripts": {
@@ -20,6 +25,7 @@
     "@vee-validate/i18n": "^4.12.4",
     "@vee-validate/rules": "^4.12.4",
     "axios": "^1.6.5",
+    "chart.js": "^4.4.2",
     "date-fns": "^3.3.1",
     "keycloak-js": "^23.0.4",
     "primeflex": "^3.3.1",

@@ -294,7 +294,7 @@ const submitResponse = () => {
           question: question,
           typeReponse: { id: id_type_question, type: question.type_question?.type } as TypeQuestionModel,
           utilisateur: question.formulaire?.creer_par,
-          posterLe: new Date(),
+          poster_le: new Date(),
           donnees_reponse: json_resp,
           id_group_reponse: idGroupResponse.value,
         };

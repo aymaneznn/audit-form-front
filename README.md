@@ -1,100 +1,42 @@
-# vue-template
+# Documentation technique pour la bibliothèque Creation de formualaires
 
-Template développé avec :
+## Introduction
+Cette bibliothèque combine Vue.js 3 pour la partie front-end et Spring Boot pour l'API. Elle propose des composants prêts à l'emploi pour la création de formulaires et la gestion des réponses.
 
-- [Vue.js 3.+](https://vuejs.org/) (Composition API, syntaxe script setup)
-- [Vue Router](https://router.vuejs.org/) : système de routeur de Vue.js
-- [TypeScript](https://www.typescriptlang.org/)
-- [Vite](https://vitejs.dev/) : outil de build
-- [Vitest](https://vitest.dev/) et [vue-test-utils](https://test-utils.vuejs.org/) : tests unitaires
-- [pnpm](https://pnpm.io/fr/) : gestionnaire de dépendances
-- [Prettier](https://prettier.io/) : formattage de code
-- [ESLint](https://eslint.org/) : linter
-- [Sass](https://sass-lang.com/) : préprocesseur CSS
-- [PrimeVue](https://primefaces.org/primevue/) : librairie de composants
-- [PrimeFlex](https://www.primefaces.org/primeflex/) : librairie utilitaire CSS
-- [VeeValidate](https://vee-validate.logaretm.com/v4/) : validation des formulaires
-- [axios](https://axios-http.com/fr/docs/intro) : client HTTP
-- [Font Awesome](https://fontawesome.com/v5/search) : librairie d'icônes
-- [PrimeIcons](https://primefaces.org/primevue/icons) : librairie d'icônes
-- [date-fns](https://date-fns.org/) : librairie utilitaire pour les dates
-- [keycloak-js](https://www.npmjs.com/package/keycloak-js) : adapteur pour Keycloak
-- [Cypress](https://www.cypress.io/) : tests End-to-End
+## Composants
 
-## Environnement de développement recommandé
+### 1. CreateForm
+Le composant `CreateForm` permet de créer des formulaires avec les fonctionnalités suivantes :
+- Ajout d'un titre et d'une description.
+- Section pour ajouter des questions avec différents types :
+  - Checkbox
+  - Texte
+  - Menu déroulant
+  - Champ numérique
+  - Champ de texte
+  - Sélection multiple
+- Possibilité de publier le formulaire une fois créé.
 
-### IDE :
+### 2. TableauDeBord
+Le composant `TableauDeBord` permet de consulter les formulaires créés. Il offre les fonctionnalités suivantes :
+- Modification du titre et de la description des formulaires et la suppression du formulaire avec ses réponses.
+- Consultation des questions associées à chaque formulaire.
+- Liens pour répondre au formulaire et voir les réponses.
 
-[VSCode](https://code.visualstudio.com/)
+### 3. RepondreFormulaire
+Le composant `RepondreFormulaire` permet de répondre aux formulaires. Il affiche un récapitulatif de la réponse une fois envoyée.
 
-### Extensions :
+### 4. ReponseFormulaire
+Le composant `ReponseFormulaire` affiche un tableau avec la liste des réponses par utilisateur. Il permet de consulter en détail les réponses reçues pour chaque formulaire.
 
-- [Volar](https://marketplace.visualstudio.com/items?itemName=vue.volar) (désactiver Vetur si activé) + [TypeScript Vue Plugin (Volar)](https://marketplace.visualstudio.com/items?itemName=vue.vscode-typescript-vue-plugin).
-- [ESLint](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint)
-- [GitLens](https://marketplace.visualstudio.com/items?itemName=eamodio.gitlens)
-- [Prettier](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode)
-- [Vitest](https://marketplace.visualstudio.com/items?itemName=ZixuanChen.vitest-explorer)
-- [Vue VSCode Snippets](https://marketplace.visualstudio.com/items?itemName=sdras.vue-vscode-snippets)
-
-## Configuration de Vite
-
-[Vite Configuration Reference](https://vitejs.dev/config/).
-
-## Commandes utiles
-
-### Installation du projet
-
-```sh
-pnpm install
-```
-
-### Compiler le projet et lancer le serveur de développement
-
-```sh
-pnpm dev
-```
-
-### Vérification des types, compilation et minification pour la mise en production
-
-```sh
-pnpm build
-```
-
-### Lancer les tests unitaires avec [Vitest](https://vitest.dev/)
-
-```sh
-pnpm test:unit
-pnpm test:unit:ci # pour avoir le coverage
-```
-
-### Lancer les tests End-to-End avec [Cypress](https://www.cypress.io/)
-
-```sh
-pnpm build
-pnpm test:e2e # or `pnpm test:e2e:ci` for headless testing
-```
-
-### Lancer un scan du linter [ESLint](https://eslint.org/)
-
-```sh
-pnpm lint
-```
-
-### Lancer une vérification des types TypeScript
-
-```sh
-pnpm typecheck
-```
-
-## Utilisation de VueUse
-
-VueUse propose des centaines de fonctions utilitaires : https://vueuse.org.  
-Vous pouvez l'installer comme ceci si besoin :
-
-```sh
-pnpm i @vueuse/core
-```
-
-## Mise à jour de PrimeVue
-
-Après chaque mise à jour de PrimeVue, il est nécessaire d'écraser les deux thèmes situés dans `public/themes/.../theme.css` par ceux présent dans le dossier `node_modules/primevue/resources/themes/.../theme.css`. Nous sommes obligés de figer les thèmes pour gérer le thème clair et le thème sombre avec le système actuel.
+## Utilisation
+1. Importez les composants nécessaires dans vos fichiers Vue.
+2. Utilisez-les dans vos templates comme suit :
+   ```vue
+   <template>
+     <CreateForm />
+     <TableauDeBord />
+     <RepondreFormulaire />
+     <ReponseFormulaire />
+   </template>
+   ```

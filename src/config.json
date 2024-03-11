@@ -1,6 +1,6 @@
 {
   "VUE_APP_PUBLIC_PATH": "/",
-  "VUE_APP_API_BASE_URL": "http://localhost:8082",
+  "VUE_APP_API_BASE_URL": "http://localhost:8083",
   "VUE_APP_KEYCLOAK_HOST_URL": "https://sso.dev.cloud.okteo.fr",
   "VUE_APP_KEYCLOAK_REALM": "Okteo",
   "VUE_APP_KEYCLOAK_CLIENT_ID": "testJbe"
