@@ -41,6 +41,9 @@
         </PDialog>
       </template>
     </PCard>
+    <div class="card mt-3">
+      <Chart type="bar" :data="chartData" :options="chartOptions" class="h-30rem" />
+    </div>
   </div>
 
   <Toast />
@@ -78,6 +81,16 @@ const nbQuestionNonRepondue = ref(0);
 const chartData = ref();
 const chartOptions = ref();
 
+import Chart from 'primevue/chart';
+
+type QuestionStat = {
+  question: string;
+  nombreDeReponse: number;
+  nombreDeNonReponse: number;
+};
+
+const statQuestions = ref<QuestionStat[]>([]);
+
 onMounted(async () => {
   const routeParams = router.currentRoute.value.params;
   id.value = routeParams.id;
@@ -88,34 +101,40 @@ onMounted(async () => {
   formulaires.value = await apiService.getAllFormulaires();
   reponses.value = await apiService.getReponsesByFormulaire(id.value);
   loadReponse();
+  loadStats();
   reponsesToDataTable.value = groupReponsesByGroup(reponses.value);
   chartData.value = setChartData();
   chartOptions.value = setChartOptions();
 });
 
+const label = ref<string[]>([]);
+const dataNbReponse = ref<number[]>([]);
+const dataNbNonReponse = ref<number[]>([]);
+
 const setChartData = () => {
   const documentStyle = getComputedStyle(document.documentElement);
 
+  for (let i = 0; i < statQuestions.value.length; i++) {
+    const question = statQuestions.value[i];
+    label.value.push(question.question);
+    dataNbReponse.value.push(question.nombreDeReponse);
+    dataNbNonReponse.value.push(question.nombreDeNonReponse);
+  }
+
   return {
-    labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
+    labels: label.value,
     datasets: [
       {
         type: 'bar',
-        label: 'Dataset 1',
-        backgroundColor: documentStyle.getPropertyValue('--cyan-500'),
-        data: [50, 25, 12, 48, 90, 76, 42],
+        label: 'nombre de réponses',
+        backgroundColor: documentStyle.getPropertyValue('--cyan-400'),
+        data: dataNbReponse.value,
       },
       {
         type: 'bar',
-        label: 'Dataset 2',
-        backgroundColor: documentStyle.getPropertyValue('--gray-500'),
-        data: [21, 84, 24, 75, 37, 65, 34],
-      },
-      {
-        type: 'bar',
-        label: 'Dataset 3',
-        backgroundColor: documentStyle.getPropertyValue('--orange-500'),
-        data: [41, 52, 24, 74, 23, 21, 32],
+        label: 'nombre de réponses vides',
+        backgroundColor: documentStyle.getPropertyValue('--gray-300'),
+        data: dataNbNonReponse.value,
       },
     ],
   };
@@ -229,6 +248,47 @@ function loadReponse() {
       reponse.donnees_reponse.data = reponse.donnees_reponse.data.map((item: { code: unknown }) => item.code);
     }
   });
+}
+
+function groupReponsesByQuestion(reponses: ReponseModel[]): Record<string, ReponseModel[]> {
+  const groupedReponses: Record<string, ReponseModel[]> = {};
+
+  for (const reponse of reponses) {
+    const questionId = reponse.question?.id ?? '';
+
+    if (!groupedReponses[questionId]) {
+      groupedReponses[questionId] = [];
+    }
+
+    groupedReponses[questionId].push(reponse);
+  }
+  return groupedReponses;
+}
+
+function loadStats() {
+  const groupedReponses = groupReponsesByQuestion(reponses.value);
+
+  for (const questionId in groupedReponses) {
+    if (Object.prototype.hasOwnProperty.call(groupedReponses, questionId)) {
+      const questionReponses = groupedReponses[questionId];
+
+      const questionStat: QuestionStat = {
+        question: groupedReponses[questionId][0].question?.question ?? '',
+        nombreDeReponse: 0,
+        nombreDeNonReponse: 0,
+      };
+
+      for (const reponse of questionReponses) {
+        if (reponse.donnees_reponse?.data === 'Non répondu') {
+          questionStat.nombreDeNonReponse++;
+        } else {
+          questionStat.nombreDeReponse++;
+        }
+      }
+
+      statQuestions.value.push(questionStat as QuestionStat);
+    }
+  }
 }
 
 function closeResponseDialog() {
