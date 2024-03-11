@@ -4,7 +4,7 @@ import TypeQuestionModel from './TypeQuestionModel';
 import UtilisateurModel from './UtilisateurModel';
 
 type DonneesReponse = {
-  data: unknown;
+  data?: unknown;
 };
 
 export default class ReponseModel {

@@ -194,7 +194,8 @@ function groupReponsesByGroup(reponses: ReponseModel[]): ReponseModel[] {
   return groupedReponses;
 }
 
-async function showResponseDialog(rowData: { id_group_reponse: string }) {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+async function showResponseDialog(rowData: any) {
   selectedRowData.value = rowData;
   responseDialogVisible.value = true;
   reponses.value = await apiService.getReponsesByFormulaire(id.value);

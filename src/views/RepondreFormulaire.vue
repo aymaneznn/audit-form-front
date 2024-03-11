@@ -22,8 +22,8 @@
       <div class="question-body">
         <div v-if="question.type_question?.type === 'checkbox'">
           <div v-for="(item, i) in checkboxs[question.id_option ?? 0]" :key="i" class="checkbox-item mb-2">
-            <Checkbox v-model="checkbox[question.id_option ?? 0]" inputId="p" :value="item.label" />
-            <label for="p" class="ml-2">{{ item.label }}</label>
+            <Checkbox v-model="checkbox[question.id_option ?? 0]" inputId="p" :value="returnString(item)" />
+            <label for="p" class="ml-2">{{ returnString(item) }}</label>
           </div>
         </div>
         <div v-else-if="question.type_question?.type === 'text'">
@@ -214,6 +214,10 @@ onMounted(async () => {
 
 const goBack = () => {
   router.go(-1);
+};
+
+const returnString = (i: unknown) => {
+  return (i as { label: string }).label;
 };
 
 enum QuestionType {
