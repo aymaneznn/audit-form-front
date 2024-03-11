@@ -202,7 +202,7 @@ async function showResponseDialog(rowData: any) {
 
   reponses.value.forEach((reponse) => {
     if (!reponse.donnees_reponse?.data) {
-      reponse.donnees_reponse.data = 'Non répondu';
+      reponse.donnees_reponse = { data: 'Non répondu' };
     } else if (typeof reponse.donnees_reponse.data === 'object' && 'code' in reponse.donnees_reponse.data) {
       reponse.donnees_reponse.data = reponse.donnees_reponse.data.code;
     } else if (
@@ -218,7 +218,7 @@ async function showResponseDialog(rowData: any) {
 function loadReponse() {
   reponses.value.forEach((reponse) => {
     if (!reponse.donnees_reponse?.data) {
-      reponse.donnees_reponse.data = 'Non répondu';
+      reponse.donnees_reponse = { data: 'Non répondu' };
       nbQuestionNonRepondue.value++;
     } else if (typeof reponse.donnees_reponse.data === 'object' && 'code' in reponse.donnees_reponse.data) {
       reponse.donnees_reponse.data = reponse.donnees_reponse.data.code;
