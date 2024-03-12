@@ -1,6 +1,6 @@
 <template>
   <div v-if="needRefresh">
-    <Card class="card">
+    <PCard class="card">
       <template #title> Mise à jour disponible </template>
       <template #content>
         <span> Une nouvelle version de l'application est disponible. Cliquez sur le bouton « Recharger » pour la mettre à jour.</span>
@@ -9,7 +9,7 @@
         <PButton v-if="needRefresh" @click="updateServiceWorker()" class="Primary" label="Recharger" />
         <PButton @click="close" class="p-button-secondary" label="Fermer" style="margin-left: 0.5em" />
       </template>
-    </Card>
+    </PCard>
   </div>
 </template>
 

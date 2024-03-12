@@ -229,8 +229,8 @@ const setChartData2 = () => {
     datasets: [
       {
         data: [nbQuestionRepondue.value, nbQuestionNonRepondue.value],
-        backgroundColor: ['rgba(249, 115, 22, 0.4)', 'rgba(6, 182, 212, 0.4)'],
-        hoverBackgroundColor: ['rgba(249, 115, 22, 1)', 'rgba(6, 182, 212, 1)'],
+        backgroundColor: ['rgba(6, 182, 212, 0.4)', 'rgba(249, 115, 22, 0.4)'],
+        hoverBackgroundColor: ['rgba(6, 182, 212, 1)', 'rgba(249, 115, 22, 1)'],
       },
     ],
   };
@@ -381,8 +381,8 @@ function loadReponse() {
     ) {
       reponse.donnees_reponse.data = reponse.donnees_reponse.data.map((item: { code: unknown }) => item.code);
     }
-    nbQuestionRepondue.value++;
   });
+  nbQuestionRepondue.value = reponses.value.length - nbQuestionNonRepondue.value;
 }
 
 function groupReponsesByQuestion(reponses: ReponseModel[]): Record<string, ReponseModel[]> {

@@ -310,10 +310,7 @@
       <div class="button-container">
         <PButton
           label="Publiez le formulaire et générer un lien"
-          @click="
-            publieForm();
-            getUrlForm();
-          "
+          @click="publieForm()"
           class="p-button-small p-button-info question-creator"
         />
       </div>
@@ -324,20 +321,15 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
-
 import { useToast } from 'primevue/usetoast';
-
-import { useApiService } from '@/composables/GestionFormulaireService';
+import { useConfirm } from 'primevue/useconfirm';
 
 import FormulaireModel from '@/models/FormulaireModel';
-import QuestionModel from '@/models/QuestionModel';
-
 import SplitButton from 'primevue/splitbutton';
 
 const emit = defineEmits(['formCreated']);
 
 const toast = useToast();
-const apiService = useApiService();
 
 const questionCordonnes = ref('Vos coordonnées : ');
 
@@ -361,7 +353,6 @@ const dialogVisibleAddCheckbox = ref();
 const dialogVisibleAddOptionDropDown = ref();
 const dialogVisibleEditCheckBox = ref();
 const dialogVisibleEditNoOption = ref();
-const url = ref<string>('');
 
 const checkbox = ref<{ label: string; value: string }[]>([]);
 const text = ref<string>('');
@@ -370,9 +361,20 @@ const optionsDropdown = ref<{ name: string; code: string }[]>([]);
 const inputNumber = ref<number>(0);
 const inputText = ref<string>('');
 const indexToEdit = ref<number>();
-const listeQuestion = ref<QuestionModel[]>([]);
+
+const confirm = useConfirm();
 
 const createdFormJson = ref();
+
+onMounted(async () => {
+  questions.value = [
+    {
+      question: questionCordonnes.value,
+      type: 'inputText',
+      options: null,
+    },
+  ];
+});
 
 const confirmTitleEdit = () => {
   if (indexToEdit.value !== undefined && editedQuestion.value !== undefined) {
@@ -380,8 +382,7 @@ const confirmTitleEdit = () => {
   }
   editingTitle.value = false;
 };
-import { useConfirm } from 'primevue/useconfirm';
-const confirm = useConfirm();
+
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const confirmerSuppression = (event: { currentTarget: any }, index: number) => {
   confirm.require({
@@ -410,23 +411,20 @@ const types = ref([
   { label: 'Multi Select', value: 'multiSelect', icon: 'pi pi-bars' },
 ]);
 
-onMounted(async () => {
-  await apiService.getAllFormulaires();
-  questions.value = [
-    {
-      question: questionCordonnes.value,
-      type: 'inputText',
-      options: null,
+const itemsModels = [
+  {
+    label: 'Avis clients',
+    command: () => {
+      avisClientModel();
     },
-  ];
-});
-
-async function getUrlForm() {
-  url.value = window.location.href;
-  const form: FormulaireModel[] = await apiService.getAllFormulaires();
-  url.value = url.value.split('/').slice(0, -1).join('/');
-  url.value = url.value + '/reponse/' + form[form.length - 1]?.id;
-}
+  },
+  {
+    label: 'Demande de devis',
+    command: () => {
+      demandeDevisModel();
+    },
+  },
+];
 
 function reset() {
   checkbox.value = [];
@@ -475,12 +473,12 @@ function addOptionDropDown() {
 }
 
 function deleteQuestion() {
-  if (question.value === '' && (selectedType.value === undefined || selectedType.value === '')) {
+  if (!question.value && (!selectedType.value || selectedType.value === '')) {
     showInfo('', 'Aucune question à supprimer');
   } else {
     question.value = '';
     selectedType.value = '';
-    showInfo('', 'Question supprimé');
+    showInfo('', 'Question supprimée');
   }
 }
 
@@ -490,14 +488,13 @@ function deleteQuestionAt(index: number) {
     showSuccess('', 'Question supprimé');
   }
 }
-function deleteOptionAt(index: number) {
-  if (index >= 0 && index < questions.value.length && indexToEdit.value !== undefined) {
-    const options = questions.value[indexToEdit.value]?.options;
 
-    if (options) {
-      options.splice(index, 1);
-      showSuccess('', 'Option supprimé');
-    }
+function deleteOptionAt(index: number) {
+  const options = questions.value[indexToEdit.value]?.options;
+
+  if (index >= 0 && index < questions.value.length && indexToEdit.value !== undefined && options) {
+    options.splice(index, 1);
+    showSuccess('', 'Option supprimé');
   }
 }
 
@@ -507,107 +504,98 @@ const activateHeader = (headerName: string) => {
 
 const editQuestion = (index: number) => {
   indexToEdit.value = index;
-  if (
-    questions.value[index]?.type === 'checkbox' ||
-    questions.value[index]?.type === 'dropdown' ||
-    questions.value[index]?.type === 'multiSelect'
-  ) {
+  const questionType = questions.value[index]?.type;
+
+  if (questionType === 'checkbox' || questionType === 'dropdown' || questionType === 'multiSelect') {
     dialogVisibleEditCheckBox.value = true;
-    editedQuestion.value = questions.value[index]?.question;
-  }
-  if (
-    questions.value[index]?.type === 'text' ||
-    questions.value[index]?.type === 'inputNumber' ||
-    questions.value[index]?.type === 'inputText'
-  ) {
+  } else if (questionType === 'text' || questionType === 'inputNumber' || questionType === 'inputText') {
     dialogVisibleEditNoOption.value = true;
-    editedQuestion.value = questions.value[index]?.question;
   }
+
+  editedQuestion.value = questions.value[index]?.question;
 };
 
 function addQuestion(type: string) {
-  if (question.value) {
-    if (type === 'checkbox') {
-      questions.value.push({ question: question.value, type, options: checkbox.value });
-      question.value = '';
-      checkbox.value = [];
-      showSuccess('', 'Question ajouté');
-    }
-    if (type === 'text') {
-      questions.value.push({ question: question.value, type, options: '' });
-      question.value = '';
-      text.value = '';
-      showSuccess('', 'Question ajouté');
-    }
-    if (type === 'dropdown' || type === 'multiSelect') {
-      questions.value.push({ question: question.value, type, options: optionsDropdown.value });
-      question.value = '';
-      optionsDropdown.value = [];
-      showSuccess('', 'Question ajouté');
-    }
-    if (type === 'inputNumber') {
-      questions.value.push({ question: question.value, type, options: '' });
-      question.value = '';
-      inputNumber.value = 0;
-      showSuccess('', 'Question ajouté');
-    }
-    if (type === 'inputText') {
-      questions.value.push({ question: question.value, type, options: '' });
-      question.value = '';
-      inputText.value = '';
-      showSuccess('', 'Question ajouté');
-    }
-    selectedType.value = '';
-
-    // Scroll to the bottom of the page
-    setTimeout(() => {
-      const element = document.querySelector('.question-creator');
-      if (element) {
-        element.scrollIntoView({ behavior: 'smooth', block: 'end' });
-      }
-    }, 0);
-  } else {
+  if (!question.value) {
     showWarn('', 'Entrez une question');
+    return;
   }
+
+  let options: string | { label: string; value: string }[] = '';
+  switch (type) {
+    case 'checkbox':
+      options = checkbox.value;
+      checkbox.value = [];
+      break;
+    case 'text':
+      options = '';
+      text.value = '';
+      break;
+    case 'dropdown':
+    case 'multiSelect':
+      options = optionsDropdown.value;
+      optionsDropdown.value = [];
+      break;
+    case 'inputNumber':
+      options = '';
+      inputNumber.value = 0;
+      break;
+    case 'inputText':
+      options = '';
+      inputText.value = '';
+      break;
+  }
+
+  questions.value.push({ question: question.value, type, options });
+  question.value = '';
+  selectedType.value = '';
+
+  showSuccess('', 'Question ajouté');
+
+  // Scroll to the bottom of the page
+  setTimeout(() => {
+    const element = document.querySelector('.question-creator');
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth', block: 'end' });
+    }
+  }, 0);
 }
 
-const showSuccess = (title: string, detail: string) => {
+const showToast = (severity: string, title: string, detail: string) => {
   if (title === '') {
-    title = 'Succès';
+    switch (severity) {
+      case 'success':
+        title = 'Succès';
+        break;
+      case 'info':
+        title = 'Information';
+        break;
+      case 'warn':
+        title = 'Attention';
+        break;
+      case 'error':
+        title = 'Erreur';
+        break;
+    }
   }
-  toast.add({ severity: 'success', summary: title, detail: detail, life: 3000 });
+  toast.add({ severity, summary: title, detail, life: 3000 });
+};
+
+const showSuccess = (title: string, detail: string) => {
+  showToast('success', title, detail);
 };
 
 const showInfo = (title: string, detail: string) => {
-  if (title === '') {
-    title = 'Information';
-  }
-  toast.add({ severity: 'info', summary: title, detail: detail, life: 3000 });
+  showToast('info', title, detail);
 };
 
 const showWarn = (title: string, detail: string) => {
-  if (title === '') {
-    title = 'Attention';
-  }
-  toast.add({ severity: 'warn', summary: title, detail: detail, life: 3000 });
+  showToast('warn', title, detail);
 };
 
 const showError = (title: string, detail: string) => {
-  if (title === '') {
-    title = 'Erreur';
-  }
-  toast.add({ severity: 'error', summary: title, detail: detail, life: 3000 });
+  showToast('error', title, detail);
 };
-
-enum QuestionType {
-  Checkbox = 1,
-  Text = 2,
-  Dropdown = 3,
-  InputNumber = 4,
-  InputText = 5,
-  MultiSelect = 6,
-  SansType = 0,
-}
 
 function generateRandomIdWithLength(length: number) {
   let result = '';
@@ -630,74 +618,36 @@ async function publieForm() {
     } else if (questions.value.length === 0) {
       showWarn('', 'Formulaire sans questions');
     }
-  } else {
-    const formulaire: FormulaireModel = {
-      id: localId,
-      titre: formName.value,
-      description: formDescription.value,
-      creer_par: {
-        id: 1,
-        nom: 'Zen',
-        prenom: 'Aymane',
-        password: 'azerty',
-      },
-      creerLe: new Date(),
-      modifieLe: new Date(),
-    };
-    await apiService.createFormulaire(formulaire);
-
-    //const formulaires: FormulaireModel[] = await apiService.getAllFormulaires();
-    questions.value.forEach((element) => {
-      formulaire.id = localId;
-      let indexType: QuestionType = QuestionType.SansType;
-      switch (element.type) {
-        case 'checkbox':
-          indexType = 1;
-          break;
-        case 'text':
-          indexType = 2;
-          break;
-        case 'dropdown':
-          indexType = 3;
-          break;
-        case 'inputNumber':
-          indexType = 4;
-          break;
-        case 'inputText':
-          indexType = 5;
-          break;
-        case 'multiSelect':
-          indexType = 6;
-          break;
-      }
-      JSON.stringify(element.options);
-      const question: QuestionModel = {
-        id: undefined,
-        formulaire: formulaire,
-        question: element.question,
-        type_question: {
-          id: indexType,
-          type: element.type,
-        },
-        options_question: JSON.stringify(element.options),
-      };
-      listeQuestion.value.push(question);
-      apiService.createQuestion(question);
-      setTimeout(() => {}, 100);
-    });
-    showSuccess('', 'Formulaire créé');
-    // Emit the event with the created form as JSON
-    const formData = {
-      formulaire: formulaire,
-      questions: questions.value,
-    };
-
-    createdFormJson.value = JSON.stringify(formData);
-    emit('formCreated', createdFormJson.value);
-    formName.value = 'Formulaire sans titre';
-    formDescription.value = 'Formulaire sans description';
-    questions.value = [];
+    return;
   }
+
+  const formulaire: FormulaireModel = {
+    id: localId,
+    titre: formName.value,
+    description: formDescription.value,
+    creer_par: {
+      id: 1,
+      nom: 'Zen',
+      prenom: 'Aymane',
+      password: 'azerty',
+    },
+    creerLe: new Date(),
+    modifieLe: new Date(),
+  };
+
+  showSuccess('', 'Formulaire créé');
+  // Emit the event with the created form as JSON
+  const formData = {
+    formulaire: formulaire,
+    questions: questions.value,
+  };
+
+  createdFormJson.value = JSON.stringify(formData);
+  emit('formCreated', createdFormJson.value);
+
+  formName.value = 'Formulaire sans titre';
+  formDescription.value = 'Formulaire sans description';
+  questions.value = [];
 }
 
 function model() {
@@ -758,20 +708,6 @@ function model() {
   }, 0);
 }
 
-const itemsModels = [
-  {
-    label: 'Avis clients',
-    command: () => {
-      avisClientModel();
-    },
-  },
-  {
-    label: 'Demande de devis',
-    command: () => {
-      demandeDevisModel();
-    },
-  },
-];
 function avisClientModel() {
   questions.value = [
     {
