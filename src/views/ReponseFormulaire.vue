@@ -23,7 +23,7 @@
             </DataTable>
 
             <!-- Dialog for Detailed Responses -->
-            <PDialog v-model="responseDialogVisible" :visible="responseDialogVisible" style="width: 50%" class="custom-dialog">
+            <PDialog v-model:visible="responseDialogVisible" style="width: 50%" class="custom-dialog">
               <div>
                 <h3>Détails de la Réponse</h3>
                 <div class="card">

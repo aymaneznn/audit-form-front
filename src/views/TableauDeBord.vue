@@ -34,7 +34,7 @@
                   ></PButton>
                 </div>
               </div>
-              <PDialog @keydown.enter="updateForm" v-model="showEditDialog" :visible="showEditDialog" style="min-width: 30%">
+              <PDialog @keydown.enter="updateForm" v-model:visible="showEditDialog" style="min-width: 30%">
                 <div class="dialog-content">
                   <h4 class="dialog-title">Modifier le formulaire</h4>
                   <div class="form-group flex mb-4" style="flex-direction: column">

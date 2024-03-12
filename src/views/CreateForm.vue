@@ -189,9 +189,7 @@
 
           <!-- Dialog checkbox -->
           <PDialog
-            v-model="dialogVisibleAddCheckbox"
-            :visible="dialogVisibleAddCheckbox"
-            :modal="true"
+            v-model:visible="dialogVisibleAddCheckbox"
             :showHeader="true"
             :baseZIndex="1000"
             class="custom-dialog"
@@ -210,9 +208,7 @@
 
           <!-- Dialog dropdown -->
           <PDialog
-            v-model="dialogVisibleAddOptionDropDown"
-            :visible="dialogVisibleAddOptionDropDown"
-            :modal="true"
+            v-model:visible="dialogVisibleAddOptionDropDown"
             :showHeader="true"
             :baseZIndex="1000"
             class="custom-dialog"
@@ -230,14 +226,7 @@
           </PDialog>
 
           <!-- Dialog edit checkbox -->
-          <PDialog
-            v-model="dialogVisibleEditCheckBox"
-            :visible="dialogVisibleEditCheckBox"
-            :modal="true"
-            :showHeader="true"
-            :baseZIndex="1000"
-            class="custom-dialog"
-          >
+          <PDialog v-model:visible="dialogVisibleEditCheckBox" :showHeader="true" :baseZIndex="1000" class="custom-dialog">
             <div class="dialog-content">
               <!-- Checkbox -->
               <div v-if="indexToEdit !== undefined">
@@ -290,14 +279,7 @@
           </PDialog>
 
           <!-- Dialog edit sans options -->
-          <PDialog
-            v-model="dialogVisibleEditNoOption"
-            :visible="dialogVisibleEditNoOption"
-            :modal="true"
-            :showHeader="true"
-            :baseZIndex="1000"
-            class="custom-dialog"
-          >
+          <PDialog v-model:visible="dialogVisibleEditNoOption" :showHeader="true" :baseZIndex="1000" class="custom-dialog">
             <div class="dialog-content" v-if="indexToEdit !== undefined">
               <h4 class="dialog-title">Modifier la question</h4>
               <div class="question-container">
