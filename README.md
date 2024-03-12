@@ -27,7 +27,7 @@ Le composant `TableauDeBord` permet de consulter les formulaires créés. Il off
 Le composant `RepondreFormulaire` permet de répondre aux formulaires. Il affiche un récapitulatif de la réponse une fois envoyée.
 
 ### 4. ReponseFormulaire
-Le composant `ReponseFormulaire` affiche un tableau avec la liste des réponses par utilisateur. Il permet de consulter en détail les réponses reçues pour chaque formulaire.
+Le composant `ReponseFormulaire` affiche un tableau avec la liste des réponses par utilisateur. Il permet de consulter en détail les réponses reçues pour chaque formulaire avec une mulititudes de `Charts` pour voir les statistiques en détails des réponses.
 
 ## Utilisation
 1. Importez les composants nécessaires dans vos fichiers Vue.
