@@ -1,4 +1,7 @@
 <template>
+  <div style="margin-left: 9.3%">
+    <SplitButton class="p-button-small p-button-info" label="Modele de formulaire" @click="model" :model="itemsModels" />
+  </div>
   <div class="form-container">
     <!-- En-tête du formulaire -->
     <PCard class="form-header" :class="{ active: activeHeader === 'form' }" @click="activateHeader('form')">
@@ -304,9 +307,6 @@
     </PCard>
 
     <div class="flex">
-      <div class="button-container mr-3">
-        <PButton label="Modele de formulaire" @click="model" class="p-button-small p-button-info" />
-      </div>
       <div class="button-container">
         <PButton
           label="Publiez le formulaire et générer un lien"
@@ -331,6 +331,8 @@ import { useApiService } from '@/composables/GestionFormulaireService';
 
 import FormulaireModel from '@/models/FormulaireModel';
 import QuestionModel from '@/models/QuestionModel';
+
+import SplitButton from 'primevue/splitbutton';
 
 const toast = useToast();
 const apiService = useApiService();
@@ -735,6 +737,102 @@ function model() {
     },
   ];
   showSuccess('', 'Modele chargé');
+  // Scroll to the bottom of the page
+  setTimeout(() => {
+    const element = document.querySelector('.question-creator');
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth', block: 'end' });
+    }
+  }, 0);
+}
+
+const itemsModels = [
+  {
+    label: 'Avis clients',
+    command: () => {
+      avisClientModel();
+    },
+  },
+  {
+    label: 'Demande de devis',
+    command: () => {
+      demandeDevisModel();
+    },
+  },
+];
+function avisClientModel() {
+  questions.value = [
+    {
+      question: 'Quelle est votre satisfaction globale concernant nos services ?',
+      type: 'dropdown',
+      options: [
+        { name: 'Très satisfait', code: 'tres_satisfait' },
+        { name: 'Satisfait', code: 'satisfait' },
+        { name: 'Neutre', code: 'neutre' },
+        { name: 'Insatisfait', code: 'insatisfait' },
+        { name: 'Très insatisfait', code: 'tres_insatisfait' },
+      ],
+    },
+    {
+      question: 'Quels aspects de nos services avez-vous appréciés ?',
+      type: 'checkbox',
+      options: [
+        { label: 'Qualité des produits', value: 'qualite_produits' },
+        { label: 'Service client', value: 'service_client' },
+        { label: 'Prix compétitifs', value: 'prix_competitifs' },
+        { label: 'Livraison rapide', value: 'livraison_rapide' },
+      ],
+    },
+    {
+      question: 'Quels aspects de nos services pourrions-nous améliorer ?',
+      type: 'text',
+      options: '',
+    },
+  ];
+  showSuccess('', 'Modèle "Avis client" chargé');
+  // Scroll to the bottom of the page
+  setTimeout(() => {
+    const element = document.querySelector('.question-creator');
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth', block: 'end' });
+    }
+  }, 0);
+}
+
+function demandeDevisModel() {
+  questions.value = [
+    {
+      question: 'Quel est votre nom complet ?',
+      type: 'inputText',
+      options: null,
+    },
+    {
+      question: 'Quelle est votre adresse e-mail ?',
+      type: 'inputText',
+      options: null,
+    },
+    {
+      question: 'Quel est votre numéro de téléphone ?',
+      type: 'inputText',
+      options: null,
+    },
+    {
+      question: 'Quel est le type de service que vous recherchez ?',
+      type: 'dropdown',
+      options: [
+        { name: 'Développement web', code: 'developpement_web' },
+        { name: 'Design graphique', code: 'design_graphique' },
+        { name: 'Marketing digital', code: 'marketing_digital' },
+        { name: 'Consulting', code: 'consulting' },
+      ],
+    },
+    {
+      question: 'Décrivez brièvement votre projet ou vos besoins.',
+      type: 'text',
+      options: '',
+    },
+  ];
+  showSuccess('', 'Modèle "Demande de devis" chargé');
   // Scroll to the bottom of the page
   setTimeout(() => {
     const element = document.querySelector('.question-creator');
