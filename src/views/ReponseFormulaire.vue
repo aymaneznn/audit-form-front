@@ -153,8 +153,6 @@ const dataNbReponse = ref<number[]>([]);
 const dataNbNonReponse = ref<number[]>([]);
 
 const setChartData1 = () => {
-  const documentStyle = getComputedStyle(document.documentElement);
-
   for (let i = 0; i < statQuestions.value.length; i++) {
     const question = statQuestions.value[i];
     label.value.push(question.question);
@@ -168,13 +166,15 @@ const setChartData1 = () => {
       {
         type: 'bar',
         label: 'nombre de réponses',
-        backgroundColor: documentStyle.getPropertyValue('--cyan-400'),
+        backgroundColor: 'rgba(6, 182, 212, 0.5)',
+        hoverBackgroundColor: 'rgba(6, 182, 212, 1)',
         data: dataNbReponse.value,
       },
       {
         type: 'bar',
         label: 'nombre de réponses vides',
-        backgroundColor: documentStyle.getPropertyValue('--gray-300'),
+        backgroundColor: 'rgba(249, 115, 22, 0.5)',
+        hoverBackgroundColor: 'rgba(249, 115, 22, 1)',
         data: dataNbNonReponse.value,
       },
     ],
@@ -224,23 +224,13 @@ const setChartOptions1 = () => {
 };
 
 const setChartData2 = () => {
-  const documentStyle = getComputedStyle(document.body);
-
   return {
     labels: ['Nombre de questions répondues', 'Nombre de questions non répondues'],
     datasets: [
       {
         data: [nbQuestionRepondue.value, nbQuestionNonRepondue.value],
-        backgroundColor: [
-          documentStyle.getPropertyValue('--cyan-500'),
-          documentStyle.getPropertyValue('--orange-500'),
-          documentStyle.getPropertyValue('--gray-500'),
-        ],
-        hoverBackgroundColor: [
-          documentStyle.getPropertyValue('--cyan-400'),
-          documentStyle.getPropertyValue('--orange-400'),
-          documentStyle.getPropertyValue('--gray-400'),
-        ],
+        backgroundColor: ['rgba(249, 115, 22, 0.4)', 'rgba(6, 182, 212, 0.4)'],
+        hoverBackgroundColor: ['rgba(249, 115, 22, 1)', 'rgba(6, 182, 212, 1)'],
       },
     ],
   };
