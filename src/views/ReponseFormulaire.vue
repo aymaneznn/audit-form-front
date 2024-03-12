@@ -11,10 +11,10 @@
             </div>
 
             <!-- DataTable -->
-            <DataTable :value="reponsesToDataTable" tableStyle="min-width: 50rem">
+            <DataTable :value="reponsesToDataTable" sortField="poster_le" :sortOrder="-1" tableStyle="min-width: 50rem">
               <Column field="id_group_reponse" header="Utilisateur"></Column>
               <Column field="formulaire.titre" header="Formulaire"></Column>
-              <Column field="posterLe" header="Date de la réponse"></Column>
+              <Column field="poster_le" header="Date de la réponse"></Column>
               <Column header="Actions">
                 <template #body="{ data }">
                   <PButton icon="pi pi-search" @click="showResponseDialog(data)" class="p-button-info"></PButton>
@@ -36,7 +36,11 @@
                     <p class="m-0">{{ question.donnees_reponse?.data }}</p>
                   </Panel>
                 </div>
-                <PButton label="Fermer" @click="closeResponseDialog" class="p-button-secondary"></PButton>
+                <PButton
+                  label="Fermer"
+                  @click="closeResponseDialog"
+                  class="p-button-secondary bg-red-500 border-transparent text-white"
+                ></PButton>
               </div>
             </PDialog>
           </template>
@@ -46,11 +50,11 @@
         <div class="card mt-3">
           <Chart type="bar" :data="chartData1" :options="chartOptions1" class="h-30rem" />
         </div>
-        <div class="flex" style="flex-wrap: wrap; justify-content: space-between;">
-          <div class="card flex justify-content-center" style="width: 49%;">
+        <div class="flex" style="flex-wrap: wrap; justify-content: space-between">
+          <div class="card flex justify-content-center" style="width: 49%">
             <Chart type="doughnut" :data="chartData2" :options="chartOptions2" class="w-full md:w-30rem" />
           </div>
-          <div class="card" style="width: 50%;">
+          <div class="card" style="width: 50%">
             <Chart type="line" :data="chartData3" :options="chartOptions3" class="h-30rem" />
           </div>
         </div>
@@ -249,13 +253,13 @@ const setChartOptions2 = () => {
 const setChartData3 = () => {
   const documentStyle = getComputedStyle(document.documentElement);
 
-  const datesSet = new Set(reponsesToDataTable.value.map((reponse) => reponse.posterLe));
-  const dates = Array.from(datesSet).map((date) => new Date(date).toLocaleDateString('fr-FR'));
-  const statByDate = [];
+  const datesSet = new Set(reponsesToDataTable.value.map((reponse) => reponse.poster_le));
+  const dates = Array.from(datesSet).map((date) => new Date(date as Date).toLocaleDateString('fr-FR'));
+  const statByDate: number[] = [];
 
   reponsesToDataTable.value.forEach((reponse) => {
     dates.forEach((date) => {
-      if (new Date(reponse.posterLe).toLocaleDateString('fr-FR') === date) {
+      if (new Date(reponse.poster_le as Date).toLocaleDateString('fr-FR') === date) {
         statByDate[dates.indexOf(date)] = (statByDate[dates.indexOf(date)] || 0) + 1;
       }
     });
@@ -332,7 +336,7 @@ function groupReponsesByGroup(reponses: ReponseModel[]): ReponseModel[] {
         id_group_reponse: groupId,
         formulaire: groupReponses[0].formulaire,
         question: groupReponses[0].question,
-        posterLe: groupReponses[0].poster_le,
+        poster_le: new Date(groupReponses[0].poster_le as Date).toLocaleDateString('fr-FR'),
       };
 
       groupedReponses.push(groupReponse as ReponseModel);
