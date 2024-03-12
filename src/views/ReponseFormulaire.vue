@@ -5,9 +5,19 @@
         <PCard class="p-5">
           <template #content>
             <!-- Statistics -->
-            <div class="mb-4">
-              <p class="mb-2"><strong>Total de Réponses:</strong> {{ reponsesToDataTable.length }}</p>
-              <p><strong>Questions Non Répondues:</strong> {{ nbQuestionNonRepondue }}</p>
+            <div
+              class="mb-4 flex justify-content-center"
+              style="color: #007bff; font-weight: bold; border: 1px solid black; padding: 0.5rem"
+            >
+              <p class="mr-5 mt-2">
+                <strong style="text-decoration: underline">Total de réponses</strong>: {{ reponsesToDataTable.length }}
+              </p>
+              <p class="mr-5 mt-2" style="color: #dc3545">
+                <strong style="text-decoration: underline">Questions vides</strong>: {{ nbQuestionNonRepondue }}
+              </p>
+              <p class="mt-2" style="color: #28a745">
+                <strong style="text-decoration: underline">Questions répondues</strong>: {{ nbQuestionRepondue }}
+              </p>
             </div>
 
             <!-- DataTable -->
@@ -96,6 +106,7 @@ const reponsesToDataTable = ref<ReponseModel[]>([]);
 const responseDialogVisible = ref(false);
 const selectedRowData = ref(null);
 const nbQuestionNonRepondue = ref(0);
+const nbQuestionRepondue = ref(0);
 
 const chartData1 = ref();
 const chartOptions1 = ref();
@@ -219,7 +230,7 @@ const setChartData2 = () => {
     labels: ['Nombre de questions répondues', 'Nombre de questions non répondues'],
     datasets: [
       {
-        data: [reponsesToDataTable.value.length, nbQuestionNonRepondue.value],
+        data: [nbQuestionRepondue.value, nbQuestionNonRepondue.value],
         backgroundColor: [
           documentStyle.getPropertyValue('--cyan-500'),
           documentStyle.getPropertyValue('--orange-500'),
@@ -380,6 +391,7 @@ function loadReponse() {
     ) {
       reponse.donnees_reponse.data = reponse.donnees_reponse.data.map((item: { code: unknown }) => item.code);
     }
+    nbQuestionRepondue.value++;
   });
 }
 
