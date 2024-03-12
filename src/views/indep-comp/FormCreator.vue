@@ -490,7 +490,7 @@ function deleteQuestionAt(index: number) {
 }
 
 function deleteOptionAt(index: number) {
-  const options = questions.value[indexToEdit.value]?.options;
+  const options = questions.value[indexToEdit.value ?? 0]?.options;
 
   if (index >= 0 && index < questions.value.length && indexToEdit.value !== undefined && options) {
     options.splice(index, 1);
@@ -521,7 +521,7 @@ function addQuestion(type: string) {
     return;
   }
 
-  let options: string | { label: string; value: string }[] = '';
+  let options: string | { label: string; value: string }[] | { name: string; code: string }[] = '';
   switch (type) {
     case 'checkbox':
       options = checkbox.value;
@@ -578,7 +578,7 @@ const showToast = (severity: string, title: string, detail: string) => {
         break;
     }
   }
-  toast.add({ severity, summary: title, detail, life: 3000 });
+  toast.add({ severity: severity as 'success' | 'info' | 'warn' | 'error' | undefined, summary: title, detail, life: 3000 });
 };
 
 const showSuccess = (title: string, detail: string) => {
