@@ -1,49 +1,61 @@
 <template>
-  <div class="p-7">
-    <PCard class="p-5">
-      <template #content>
-        <h1 class="title mb-6">Réponses</h1>
-
-        <!-- Statistics -->
-        <div class="mb-4">
-          <p class="mb-2"><strong>Total de Réponses:</strong> {{ reponsesToDataTable.length }}</p>
-          <p><strong>Questions Non Répondues:</strong> {{ nbQuestionNonRepondue }}</p>
-        </div>
-
-        <!-- DataTable -->
-        <DataTable :value="reponsesToDataTable" tableStyle="min-width: 50rem">
-          <Column field="id_group_reponse" header="Utilisateur"></Column>
-          <Column field="formulaire.titre" header="Formulaire"></Column>
-          <Column field="posterLe" header="Date de la réponse"></Column>
-          <Column header="Actions">
-            <template #body="{ data }">
-              <PButton icon="pi pi-search" @click="showResponseDialog(data)" class="p-button-info"></PButton>
-            </template>
-          </Column>
-        </DataTable>
-
-        <!-- Dialog for Detailed Responses -->
-        <PDialog v-model="responseDialogVisible" :visible="responseDialogVisible" style="width: 50%" class="custom-dialog">
-          <div>
-            <h3>Détails de la Réponse</h3>
-            <div class="card">
-              <Panel v-for="question in reponses" :key="question.id" class="response-item mb-2" toggleable>
-                <template #header>
-                  <div class="flex align-items-center gap-2">
-                    <span class="font-bold">{{ question.question?.question }}</span>
-                  </div>
-                </template>
-                <p class="m-0">{{ question.donnees_reponse?.data }}</p>
-              </Panel>
+  <div class="p-5">
+    <TabView>
+      <TabPanel header="Reponses">
+        <PCard class="p-5">
+          <template #content>
+            <!-- Statistics -->
+            <div class="mb-4">
+              <p class="mb-2"><strong>Total de Réponses:</strong> {{ reponsesToDataTable.length }}</p>
+              <p><strong>Questions Non Répondues:</strong> {{ nbQuestionNonRepondue }}</p>
             </div>
-            <PButton label="Fermer" @click="closeResponseDialog" class="p-button-secondary"></PButton>
+
+            <!-- DataTable -->
+            <DataTable :value="reponsesToDataTable" tableStyle="min-width: 50rem">
+              <Column field="id_group_reponse" header="Utilisateur"></Column>
+              <Column field="formulaire.titre" header="Formulaire"></Column>
+              <Column field="posterLe" header="Date de la réponse"></Column>
+              <Column header="Actions">
+                <template #body="{ data }">
+                  <PButton icon="pi pi-search" @click="showResponseDialog(data)" class="p-button-info"></PButton>
+                </template>
+              </Column>
+            </DataTable>
+
+            <!-- Dialog for Detailed Responses -->
+            <PDialog v-model="responseDialogVisible" :visible="responseDialogVisible" style="width: 50%" class="custom-dialog">
+              <div>
+                <h3>Détails de la Réponse</h3>
+                <div class="card">
+                  <Panel v-for="question in reponses" :key="question.id" class="response-item mb-2" toggleable>
+                    <template #header>
+                      <div class="flex align-items-center gap-2">
+                        <span class="font-bold">{{ question.question?.question }}</span>
+                      </div>
+                    </template>
+                    <p class="m-0">{{ question.donnees_reponse?.data }}</p>
+                  </Panel>
+                </div>
+                <PButton label="Fermer" @click="closeResponseDialog" class="p-button-secondary"></PButton>
+              </div>
+            </PDialog>
+          </template>
+        </PCard>
+      </TabPanel>
+      <TabPanel header="Statistiques">
+        <div class="card mt-3">
+          <Chart type="bar" :data="chartData1" :options="chartOptions1" class="h-30rem" />
+        </div>
+        <div class="flex" style="flex-wrap: wrap; justify-content: space-between;">
+          <div class="card flex justify-content-center" style="width: 49%;">
+            <Chart type="doughnut" :data="chartData2" :options="chartOptions2" class="w-full md:w-30rem" />
           </div>
-        </PDialog>
-      </template>
-    </PCard>
-    <div class="card mt-3">
-      <Chart type="bar" :data="chartData" :options="chartOptions" class="h-30rem" />
-    </div>
+          <div class="card" style="width: 50%;">
+            <Chart type="line" :data="chartData3" :options="chartOptions3" class="h-30rem" />
+          </div>
+        </div>
+      </TabPanel>
+    </TabView>
   </div>
 
   <Toast />
@@ -63,6 +75,9 @@ import PDialog from 'primevue/dialog';
 import PButton from 'primevue/button';
 import PCard from 'primevue/card';
 import Panel from 'primevue/panel';
+import Chart from 'primevue/chart';
+import TabView from 'primevue/tabview';
+import TabPanel from 'primevue/tabpanel';
 
 const apiService = useApiService();
 
@@ -78,10 +93,14 @@ const responseDialogVisible = ref(false);
 const selectedRowData = ref(null);
 const nbQuestionNonRepondue = ref(0);
 
-const chartData = ref();
-const chartOptions = ref();
+const chartData1 = ref();
+const chartOptions1 = ref();
 
-import Chart from 'primevue/chart';
+const chartData2 = ref();
+const chartOptions2 = ref();
+
+const chartData3 = ref();
+const chartOptions3 = ref();
 
 type QuestionStat = {
   question: string;
@@ -103,15 +122,22 @@ onMounted(async () => {
   loadReponse();
   loadStats();
   reponsesToDataTable.value = groupReponsesByGroup(reponses.value);
-  chartData.value = setChartData();
-  chartOptions.value = setChartOptions();
+
+  chartData1.value = setChartData1();
+  chartOptions1.value = setChartOptions1();
+
+  chartData2.value = setChartData2();
+  chartOptions2.value = setChartOptions2();
+
+  chartData3.value = setChartData3();
+  chartOptions3.value = setChartOptions3();
 });
 
 const label = ref<string[]>([]);
 const dataNbReponse = ref<number[]>([]);
 const dataNbNonReponse = ref<number[]>([]);
 
-const setChartData = () => {
+const setChartData1 = () => {
   const documentStyle = getComputedStyle(document.documentElement);
 
   for (let i = 0; i < statQuestions.value.length; i++) {
@@ -139,7 +165,7 @@ const setChartData = () => {
     ],
   };
 };
-const setChartOptions = () => {
+const setChartOptions1 = () => {
   const documentStyle = getComputedStyle(document.documentElement);
   const textColor = documentStyle.getPropertyValue('--text-color');
   const textColorSecondary = documentStyle.getPropertyValue('--text-color-secondary');
@@ -171,6 +197,109 @@ const setChartOptions = () => {
       },
       y: {
         stacked: true,
+        ticks: {
+          color: textColorSecondary,
+        },
+        grid: {
+          color: surfaceBorder,
+        },
+      },
+    },
+  };
+};
+
+const setChartData2 = () => {
+  const documentStyle = getComputedStyle(document.body);
+
+  return {
+    labels: ['Nombre de questions répondues', 'Nombre de questions non répondues'],
+    datasets: [
+      {
+        data: [reponsesToDataTable.value.length, nbQuestionNonRepondue.value],
+        backgroundColor: [
+          documentStyle.getPropertyValue('--cyan-500'),
+          documentStyle.getPropertyValue('--orange-500'),
+          documentStyle.getPropertyValue('--gray-500'),
+        ],
+        hoverBackgroundColor: [
+          documentStyle.getPropertyValue('--cyan-400'),
+          documentStyle.getPropertyValue('--orange-400'),
+          documentStyle.getPropertyValue('--gray-400'),
+        ],
+      },
+    ],
+  };
+};
+const setChartOptions2 = () => {
+  const documentStyle = getComputedStyle(document.documentElement);
+  const textColor = documentStyle.getPropertyValue('--text-color');
+
+  return {
+    plugins: {
+      legend: {
+        labels: {
+          usePointStyle: true,
+          color: textColor,
+        },
+      },
+    },
+  };
+};
+
+const setChartData3 = () => {
+  const documentStyle = getComputedStyle(document.documentElement);
+
+  const datesSet = new Set(reponsesToDataTable.value.map((reponse) => reponse.posterLe));
+  const dates = Array.from(datesSet).map((date) => new Date(date).toLocaleDateString('fr-FR'));
+  const statByDate = [];
+
+  reponsesToDataTable.value.forEach((reponse) => {
+    dates.forEach((date) => {
+      if (new Date(reponse.posterLe).toLocaleDateString('fr-FR') === date) {
+        statByDate[dates.indexOf(date)] = (statByDate[dates.indexOf(date)] || 0) + 1;
+      }
+    });
+  });
+
+  return {
+    labels: dates,
+    datasets: [
+      {
+        label: 'Nombre de réponses',
+        data: statByDate,
+        fill: false,
+        borderColor: documentStyle.getPropertyValue('--cyan-500'),
+        tension: 0.4,
+      },
+    ],
+  };
+};
+const setChartOptions3 = () => {
+  const documentStyle = getComputedStyle(document.documentElement);
+  const textColor = documentStyle.getPropertyValue('--text-color');
+  const textColorSecondary = documentStyle.getPropertyValue('--text-color-secondary');
+  const surfaceBorder = documentStyle.getPropertyValue('--surface-border');
+
+  return {
+    maintainAspectRatio: false,
+    aspectRatio: 0.6,
+    plugins: {
+      legend: {
+        labels: {
+          color: textColor,
+        },
+      },
+    },
+    scales: {
+      x: {
+        ticks: {
+          color: textColorSecondary,
+        },
+        grid: {
+          color: surfaceBorder,
+        },
+      },
+      y: {
         ticks: {
           color: textColorSecondary,
         },
