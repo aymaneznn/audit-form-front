@@ -66,8 +66,8 @@
                   </div>
                 </div>
                 <div class="form-actions">
-                  <PButton class="mr-3" @click="updateForm">Enregistrer</PButton>
-                  <PButton class="bg-red-500 border-transparent" @click="showEditDialog = false">Annuler</PButton>
+                  <PButton class="mr-3 bg-red-500 border-transparent" @click="showEditDialog = false">Annuler</PButton>
+                  <PButton class="" @click="updateForm">Enregistrer</PButton>
                 </div>
               </PDialog>
             </template>
