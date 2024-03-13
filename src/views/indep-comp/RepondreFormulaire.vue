@@ -154,6 +154,10 @@ onMounted(async () => {
     id.value = 1;
   }
 
+  if (localStorage.getItem('formSubmited') === 'true') {
+    formSubmited.value = true;
+  }
+
   idGroupResponse.value = generateRandomIdWithLength(10);
 
   questions.value = props.questionss;
@@ -295,6 +299,7 @@ const submitResponse = () => {
       showSuccess('', 'Réponse enregistrée avec succès');
       emit('questionSubmited', reponses);
       formSubmited.value = true;
+      localStorage.setItem('formSubmited', 'true');
       console.table(reponses);
     }
   } catch (error) {
