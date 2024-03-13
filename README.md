@@ -1,4 +1,3 @@
-```markdown
 # Vue Form Builder Lib
 
 Vue Form Builder Lib est une librairie Vue.js conçue pour simplifier la création et la réponse à des formulaires dans des applications web.
