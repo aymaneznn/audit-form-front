@@ -138,7 +138,12 @@ const idGroupResponse = ref('');
 
 const questionCordonnes = ref('Vos coordonnées : ');
 
-const props = defineProps(['questionss']);
+const props = defineProps({
+  questionss: {
+    type: Array<QuestionEdited>,
+    required: true,
+  },
+});
 
 onMounted(async () => {
   const routeParams = router.currentRoute.value.params;
