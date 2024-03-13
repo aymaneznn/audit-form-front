@@ -63,7 +63,8 @@
   <div class="p-5" v-if="formSubmited">
     <div class="card">
       <Toast />
-      <h4 class="dialog-title">Réponses au formulaire :</h4>
+      <p style="color: green; font-weight: bold">Réponses envoyées avec succès</p>
+      <h4 class="dialog-title">Récapitulatif de la réponse au formulaire :</h4>
       <Panel v-for="question in questions" :key="question.id" class="response-item" toggleable>
         <template #header>
           <div class="flex align-items-center gap-2">
@@ -294,6 +295,7 @@ const submitResponse = () => {
       showSuccess('', 'Réponse enregistrée avec succès');
       emit('questionSubmited', reponses);
       formSubmited.value = true;
+      console.table(reponses);
     }
   } catch (error) {
     console.error(error);
