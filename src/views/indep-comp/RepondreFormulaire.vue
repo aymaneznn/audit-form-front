@@ -1,8 +1,5 @@
 <template>
   <div class="response-page" v-if="!formSubmited">
-    <PButton class="nav-button" @click="goBack" style="background-color: #007bff; color: #fff; margin-right: 10px">
-      <i class="pi pi-arrow-left mr-3"></i> Retour
-    </PButton>
     <h4 class="dialog-title">Réponses au formulaire :</h4>
     <div
       v-for="question in questions"
@@ -17,7 +14,6 @@
       </div>
       <div class="question-header">
         <h3>{{ question.question }} <span v-if="question.question === questionCordonnes" style="color: red"> *</span></h3>
-        <p>Type : {{ question.type_question?.type }}</p>
       </div>
       <div class="question-body">
         <div v-if="question.type_question?.type === 'checkbox'">
@@ -65,9 +61,6 @@
     <PButton class="response-button" @click="submitResponse" style="background-color: #28a745; color: #fff; border: none">Répondre</PButton>
   </div>
   <div class="p-5" v-if="formSubmited">
-    <PButton class="nav-button mb-2" @click="goBack" style="background-color: #007bff; color: #fff; margin-right: 10px">
-      <i class="pi pi-arrow-left mr-3"></i> Retour
-    </PButton>
     <div class="card">
       <Toast />
       <h4 class="dialog-title">Réponses au formulaire :</h4>
@@ -80,14 +73,6 @@
         <p class="m-0">
           {{ getAnswer(question) }}
         </p>
-        <template #footer>
-          <div class="flex flex-wrap align-items-center justify-content-between gap-3">
-            <div class="flex align-items-center gap-2">
-              <span class="p-text-secondary">type : {{ question.type_question?.type }} </span>
-            </div>
-            <span class="p-text-secondary">formulaire : {{ question.formulaire?.titre }}</span>
-          </div>
-        </template>
       </Panel>
     </div>
   </div>
@@ -213,10 +198,6 @@ onMounted(async () => {
     }
   });
 });
-
-const goBack = () => {
-  router.go(-1);
-};
 
 const returnString = (i: unknown) => {
   return (i as { label: string }).label;

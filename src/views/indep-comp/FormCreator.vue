@@ -680,6 +680,7 @@ async function publieForm() {
   };
 
   emit('formCreated', formData);
+  console.table(questions.value);
 
   formName.value = 'Formulaire sans titre';
   formDescription.value = 'Formulaire sans description';

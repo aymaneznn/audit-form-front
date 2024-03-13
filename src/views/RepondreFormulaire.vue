@@ -289,9 +289,6 @@ const submitResponse = () => {
 
         const json_resp = { data: resp };
 
-        console.log('question.formulaire', question.formulaire);
-        console.log('question', question.id);
-
         const reponse: ReponseModel = {
           id: 0,
           formulaire: question.formulaire,
