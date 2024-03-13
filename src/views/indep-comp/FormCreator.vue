@@ -364,8 +364,6 @@ const indexToEdit = ref<number>();
 
 const confirm = useConfirm();
 
-const createdFormJson = ref();
-
 onMounted(async () => {
   questions.value = [
     {
@@ -627,23 +625,61 @@ async function publieForm() {
     description: formDescription.value,
     creer_par: {
       id: 1,
-      nom: 'Zen',
-      prenom: 'Aymane',
-      password: 'azerty',
+      nom: 'rand',
+      prenom: 'rand',
+      password: 'rand',
     },
     creerLe: new Date(),
     modifieLe: new Date(),
   };
 
+  const questionsJson: unknown[] = [];
+
+  questions.value.forEach((element) => {
+    formulaire.id = localId;
+    let indexType = -1;
+    switch (element.type) {
+      case 'checkbox':
+        indexType = 1;
+        break;
+      case 'text':
+        indexType = 2;
+        break;
+      case 'dropdown':
+        indexType = 3;
+        break;
+      case 'inputNumber':
+        indexType = 4;
+        break;
+      case 'inputText':
+        indexType = 5;
+        break;
+      case 'multiSelect':
+        indexType = 6;
+        break;
+    }
+    JSON.stringify(element.options);
+    const question = {
+      id: undefined,
+      formulaire: formulaire,
+      question: element.question,
+      type_question: {
+        id: indexType,
+        type: element.type,
+      },
+      options_question: JSON.stringify(element.options),
+    };
+    questionsJson.push(question);
+  });
+
   showSuccess('', 'Formulaire créé');
   // Emit the event with the created form as JSON
   const formData = {
     formulaire: formulaire,
-    questions: questions.value,
+    questions: questionsJson,
   };
 
-  createdFormJson.value = JSON.stringify(formData);
-  emit('formCreated', createdFormJson.value);
+  emit('formCreated', formData);
 
   formName.value = 'Formulaire sans titre';
   formDescription.value = 'Formulaire sans description';
