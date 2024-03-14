@@ -78,6 +78,8 @@
     </div>
   </div>
 
+  <PButton v-if="formSubmited" @click="resetCache" style="background-color: #007bff; color: #fff; border: none">Répondre à nouveau</PButton>
+
   <Toast />
 </template>
 
@@ -167,6 +169,12 @@ onMounted(async () => {
   sortQuestions();
   processQuestions();
 });
+
+function resetCache() {
+  localStorage.removeItem('formSubmited');
+  formSubmited.value = false;
+  resetValues();
+}
 
 const returnString = (i: unknown) => {
   return (i as { label: string }).label;
