@@ -1,21 +1,21 @@
 {
-  "name": "@okteo/vue-form-builder-lib",
+  "name": "@okteo/vue-audit-form-builder",
   "version": "0.0.1",
   "type": "module",
   "files": [
     "dist"
   ],
-  "main": "./dist/vue-form-builder-lib.umd.cjs",
-  "module": "./dist/vue-form-builder-lib.js",
+  "main": "./dist/vue-audit-form-builder.umd.cjs",
+  "module": "./dist/vue-audit-form-builder.js",
   "exports": {
     ".": {
       "import": {
         "types": "./dist/index.d.ts",
-        "default": "./dist/vue-form-builder-lib.js"
+        "default": "./dist/vue-audit-form-builder.js"
       },
       "require": {
         "types": "./dist/index.d.ts",
-        "default": "./dist/vue-form-builder-lib.cjs"
+        "default": "./dist/vue-audit-form-builder.cjs"
       }
     },
     "./style.css": "./dist/style.css"
