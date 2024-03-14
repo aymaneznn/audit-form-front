@@ -83,7 +83,7 @@
 
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
-import { useRouter } from 'vue-router';
+import { useToast } from 'primevue/usetoast';
 
 import Textarea from 'primevue/textarea';
 import Dropdown from 'primevue/dropdown';
@@ -96,12 +96,31 @@ import type FormulaireModel from '@/models/FormulaireModel';
 import type ReponseModel from '@/models/ReponseModel';
 import type TypeQuestionModel from '@/models/TypeQuestionModel';
 
-const router = useRouter();
-const id = ref();
+const toast = useToast();
 
 const emit = defineEmits(['questionSubmited']);
 
 type CheckboxType = { label: string; value: string };
+
+type QuestionEdited = {
+  id?: number;
+  formulaire?: FormulaireModel;
+  question?: string;
+  type_question?: TypeQuestionModel;
+  options_question?: string;
+  reponses?: ReponseModel[];
+  id_option?: number;
+};
+
+enum QuestionType {
+  Checkbox = 1,
+  Text = 2,
+  Dropdown = 3,
+  InputNumber = 4,
+  InputText = 5,
+  MultiSelect = 6,
+  SansType = 0,
+}
 
 const checkbox = ref<{ label: string; value: string }[]>([]);
 const checkboxs = ref<CheckboxType[]>([]);
@@ -114,16 +133,6 @@ const multiSelects = ref<unknown[]>([]);
 
 const inputNumber = ref<number[]>([]);
 const inputText = ref<string[]>([]);
-
-type QuestionEdited = {
-  id?: number;
-  formulaire?: FormulaireModel;
-  question?: string;
-  type_question?: TypeQuestionModel;
-  options_question?: string;
-  reponses?: ReponseModel[];
-  id_option?: number;
-};
 
 const questions = ref<QuestionEdited[]>([]);
 const formSubmited = ref(false);
@@ -147,13 +156,6 @@ const props = defineProps({
 });
 
 onMounted(async () => {
-  const routeParams = router.currentRoute.value.params;
-  id.value = routeParams.id;
-
-  if (id.value === undefined) {
-    id.value = 1;
-  }
-
   if (localStorage.getItem('formSubmited') === 'true') {
     formSubmited.value = true;
   }
@@ -162,6 +164,15 @@ onMounted(async () => {
 
   questions.value = props.questionss;
 
+  sortQuestions();
+  processQuestions();
+});
+
+const returnString = (i: unknown) => {
+  return (i as { label: string }).label;
+};
+
+function sortQuestions() {
   questions.value.sort((a, b) => {
     if (a.question === questionCordonnes.value) {
       return -1;
@@ -171,56 +182,51 @@ onMounted(async () => {
       return 0;
     }
   });
+}
 
+function processQuestions() {
   questions.value.forEach((question) => {
-    if (question.type_question?.type === 'checkbox') {
-      if (question.options_question) {
-        checkboxs.value.push(JSON.parse(question.options_question));
-        question.id_option = indexChecked.value;
-        indexChecked.value++;
-      }
-    }
-    if (question.type_question?.type === 'dropdown') {
-      if (question.options_question) {
-        dropdowns.value.push(JSON.parse(question.options_question));
-        question.id_option = indexDropdown.value;
-        indexDropdown.value++;
-      }
-    }
-    if (question.type_question?.type === 'multiSelect') {
-      if (question.options_question) {
-        multiSelects.value.push(JSON.parse(question.options_question));
-        question.id_option = indexMultiSelect.value;
-        indexMultiSelect.value++;
-      }
-    }
-    if (question.type_question?.type === 'inputNumber') {
-      question.id_option = indexInputNumber.value;
-      indexInputNumber.value++;
-    }
-    if (question.type_question?.type === 'inputText') {
-      question.id_option = indexInputText.value;
-      indexInputText.value++;
-    }
-    if (question.type_question?.type === 'text') {
-      question.id_option = indexText.value;
-      indexText.value++;
+    const type = question.type_question?.type;
+    const options = question.options_question ? JSON.parse(question.options_question) : null;
+
+    switch (type) {
+      case 'checkbox':
+        if (options) {
+          checkboxs.value.push(options);
+          question.id_option = indexChecked.value;
+          indexChecked.value++;
+        }
+        break;
+      case 'dropdown':
+        if (options) {
+          dropdowns.value.push(options);
+          question.id_option = indexDropdown.value;
+          indexDropdown.value++;
+        }
+        break;
+      case 'multiSelect':
+        if (options) {
+          multiSelects.value.push(options);
+          question.id_option = indexMultiSelect.value;
+          indexMultiSelect.value++;
+        }
+        break;
+      case 'inputNumber':
+        question.id_option = indexInputNumber.value;
+        indexInputNumber.value++;
+        break;
+      case 'inputText':
+        question.id_option = indexInputText.value;
+        indexInputText.value++;
+        break;
+      case 'text':
+        question.id_option = indexText.value;
+        indexText.value++;
+        break;
+      default:
+        break;
     }
   });
-});
-
-const returnString = (i: unknown) => {
-  return (i as { label: string }).label;
-};
-
-enum QuestionType {
-  Checkbox = 1,
-  Text = 2,
-  Dropdown = 3,
-  InputNumber = 4,
-  InputText = 5,
-  MultiSelect = 6,
-  SansType = 0,
 }
 
 function resetValues() {
@@ -244,7 +250,6 @@ function generateRandomIdWithLength(length: number) {
 
 const submitResponse = () => {
   try {
-    // Check if the coordinates question is present and filled
     const coordinatesQuestion = questions.value.find((question) => question.question === questionCordonnes.value);
     const coordinatesResp = coordinatesQuestion ? (inputText.value as string[])[coordinatesQuestion.id_option ?? 0] : null;
     const isCoordinatesFilled = coordinatesResp && coordinatesResp.trim() !== '';
@@ -336,10 +341,6 @@ function getAnswer(question: QuestionEdited) {
   resetValues();
 }
 
-import { useToast } from 'primevue/usetoast';
-
-const toast = useToast();
-
 const showSuccess = (title: string, detail: string) => {
   if (title === '') {
     title = 'Succès';
@@ -410,12 +411,10 @@ const showError = (title: string, detail: string) => {
   margin-top: 20px;
 }
 
-/* Style for success message */
 .success-message {
   color: #4caf50;
 }
 
-/* Style for the response summary container */
 .response-summary {
   display: flex;
   flex-direction: column;
@@ -428,24 +427,20 @@ const showError = (title: string, detail: string) => {
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
-/* Style for the question and answer items */
 .response-item {
   list-style-type: none;
   margin-bottom: 10px;
 }
 
-/* Style for the summary list */
 .summary-list {
   padding: 0;
 }
 
-/* Style for the question text */
 .question {
   font-weight: bold;
   margin-right: 5px;
 }
 
-/* Style for the answer text */
 .answer {
   color: #333;
 }

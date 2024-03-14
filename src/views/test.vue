@@ -7,8 +7,8 @@
 import { ref } from 'vue';
 
 // import des composants
-import FormCreator from '@/views/indep-comp/FormCreator.vue';
-import RepondreFormulaire from '@/views/indep-comp/RepondreFormulaire.vue';
+import FormCreator from '@/views/composants-independant/FormCreator.vue';
+import RepondreFormulaire from '@/views/composants-independant/RepondreFormulaire.vue';
 
 // import des models
 import FormulaireModel from '@/models/FormulaireModel';

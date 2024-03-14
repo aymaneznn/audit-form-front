@@ -12,7 +12,7 @@ const router = createRouter({
         {
           path: '',
           name: 'tableau-de-bord-formulaire',
-          component: () => import('@/views/TableauDeBord.vue'),
+          component: () => import('@/views/TableauDeBordFormulaire.vue'),
         },
         {
           path: '/create-form',

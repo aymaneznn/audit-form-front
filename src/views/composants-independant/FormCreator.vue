@@ -79,7 +79,10 @@
     <!-- Corps du formulaire -->
     <PCard class="form-body" :class="{ active: activeHeader === 'other' }" @click="activateHeader('other')">
       <template #title>
-        <div class="question-title"></div>
+        <div style="margin-left: 75%" class="flex">
+          <span style="font-size: 14px; margin-right: 6%; margin-top: 1%; color: red">champ obligatoire</span>
+          <InputSwitch v-model="isObigatory" />
+        </div>
         <span class="p-float-label">
           <InputText v-model="question" class="form-title mr-3" @click="question = ''" />
           <label>Question</label>
@@ -326,6 +329,7 @@ import { useConfirm } from 'primevue/useconfirm';
 
 import FormulaireModel from '@/models/FormulaireModel';
 import SplitButton from 'primevue/splitbutton';
+import InputSwitch from 'primevue/inputswitch';
 
 const emit = defineEmits(['formCreated']);
 
@@ -348,6 +352,8 @@ const questions = ref<{ question: string; type: string; options: any }[]>([]);
 const selectedType = ref();
 const nomCheckbox = ref();
 const nomOptionDropDown = ref();
+
+const isObigatory = ref(false);
 
 const dialogVisibleAddCheckbox = ref();
 const dialogVisibleAddOptionDropDown = ref();
@@ -430,6 +436,7 @@ function reset() {
   optionsDropdown.value = [];
   inputNumber.value = 0;
   inputText.value = '';
+  isObigatory.value = false;
 }
 
 function addCheckbox() {
@@ -780,7 +787,6 @@ function avisClientModel() {
     },
   ];
   showSuccess('', 'Modèle "Avis client" chargé');
-  // Scroll to the bottom of the page
   setTimeout(() => {
     const element = document.querySelector('.question-creator');
     if (element) {
@@ -828,7 +834,6 @@ function demandeDevisModel() {
     },
   ];
   showSuccess('', 'Modèle "Demande de devis" chargé');
-  // Scroll to the bottom of the page
   setTimeout(() => {
     const element = document.querySelector('.question-creator');
     if (element) {
