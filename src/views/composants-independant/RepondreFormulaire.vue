@@ -395,45 +395,13 @@ const showError = (title: string, detail: string) => {
   margin-bottom: 10px;
 }
 
-.form-info {
-  color: #28a745;
-}
-
-.additional-info p {
-  color: #6c757d;
-}
-
-.response-container {
-  margin-top: 10px;
-}
-
 .response-button {
   margin-top: 20px;
-}
-
-.success-message {
-  color: #4caf50;
-}
-
-.response-summary {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  margin-top: 20px;
-  border: 1px solid #ddd;
-  padding: 3%;
-  border-radius: 8px;
-  background-color: #fff;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
 .response-item {
   list-style-type: none;
   margin-bottom: 10px;
-}
-
-.summary-list {
-  padding: 0;
 }
 
 .question {
@@ -443,25 +411,5 @@ const showError = (title: string, detail: string) => {
 
 .answer {
   color: #333;
-}
-
-.form-header {
-  border-radius: 8px;
-  margin-bottom: 1rem;
-  padding: 1rem;
-  width: 80%;
-  border-top: 9px solid #8a2be2;
-  cursor: pointer;
-}
-
-.form-header,
-.other-header {
-  border-radius: 8px;
-  margin-bottom: 1rem;
-  padding: 1rem;
-  width: 80%;
-  border-top: 9px solid #8a2be2;
-  cursor: pointer;
-  transition: border-left 0.1s ease-in-out;
 }
 </style>

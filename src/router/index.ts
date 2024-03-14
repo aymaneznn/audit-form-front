@@ -20,9 +20,9 @@ const router = createRouter({
           component: () => import('@/views/CreateForm.vue'),
         },
         {
-          path: '/test',
-          name: 'test',
-          component: () => import('@/views/test.vue'),
+          path: '/exemple',
+          name: 'exemple',
+          component: () => import('@/views/exempleDutilisation.vue'),
         },
       ],
     },

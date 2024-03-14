@@ -923,18 +923,9 @@ function demandeDevisModel() {
   color: #fff;
 }
 
-.custom-button-container {
-  margin-top: 10px;
-}
-
 .p-button-small {
   font-size: 12px;
   padding: 8px 12px;
-}
-
-.grid-container {
-  display: grid;
-  grid-template-columns: 1fr 100px;
 }
 
 .card {
